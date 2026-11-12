@@ -7,6 +7,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suvi import SUVIMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -63,3 +64,10 @@ def test_norm_clip(suvi):
 def test_wcs(suvi):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     suvi.wcs.pixel_to_world(0*u.pix, 0*u.pix)
+
+
+def test_old_sig_sources(suvi):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = SUVIMap(suvi.data, suvi.meta)
+    assert isinstance(smap, SUVIMap)

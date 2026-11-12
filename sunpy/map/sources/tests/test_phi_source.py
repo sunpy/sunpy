@@ -11,7 +11,7 @@ from astropy.coordinates import SkyCoord
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import PHIMap
-from sunpy.util.exceptions import SunpyUserWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyUserWarning
 from .helpers import _test_private_date_setters
 
 hrt_header_list = [
@@ -304,3 +304,12 @@ def test_fdt_norm(header, expected_norm):
     norm = phi_map_fdt.plot_settings['norm']
     assert norm.vmin == expected_norm[0]
     assert norm.vmax == expected_norm[1]
+
+
+@pytest.mark.filterwarnings(r"ignore:.*WCS of this SO/PHI-HRT PHIMap.*calibrated.*")
+@pytest.mark.filterwarnings(r"ignore:This dataset was generated using on-board averaging of 3 individual observations.")
+def test_old_sig_sources(phi_map_hrt):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = PHIMap(phi_map_hrt.data, phi_map_hrt.meta)
+    assert isinstance(smap, PHIMap)

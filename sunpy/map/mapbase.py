@@ -1,13 +1,15 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-import copy
 import html
 import inspect
 import itertools
 import numbers
 import textwrap
 import webbrowser
+from abc import ABCMeta
+from collections.abc import Mapping
+from copy import deepcopy
 from functools import wraps
 from tempfile import NamedTemporaryFile
 from typing import Literal
@@ -18,7 +20,9 @@ import numpy as np
 from matplotlib.backend_bases import FigureCanvasBase
 from matplotlib.figure import Figure
 
-import reproject
+from astropy.wcs.wcsapi import BaseHighLevelWCS, BaseLowLevelWCS
+
+from ndcube import NDCube
 
 try:
     from dask.array import Array as DaskArray
@@ -29,10 +33,11 @@ except ImportError:
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, SkyCoord, UnitSphericalRepresentation
-from astropy.nddata import NDData
 from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import WCSAxes
+
+from ndcube.wcs.tools import unwrap_wcs_to_fitswcs
 
 # The next two are not used but are called to register functions with external modules
 import sunpy.coordinates
@@ -40,7 +45,6 @@ import sunpy.visualization.colormaps
 from sunpy import config, log
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.image.resample import resample as sunpy_image_resample
-from sunpy.image.resample import reshape_image_to_4d_superpixel
 from sunpy.image.transform import _get_transform_method, _rotation_function_names, affine_transform
 from sunpy.io._file_tools import write_file
 from sunpy.map.mixins.mapmeta import (
@@ -50,11 +54,10 @@ from sunpy.map.mixins.mapmeta import (
     SpatialPair,  # noqa: F401 -- re-exported for backwards compatibility with `sunpy.map.mapbase.SpatialPair`
 )
 from sunpy.map.plotting.mpl_plotter import MapPlotter
-from sunpy.util import MetaDict, extent_in_other_wcs
+from sunpy.util import MetaDict, extent_in_other_wcs, warn_deprecated
 from sunpy.util.decorators import (
     add_common_docstring,
     cached_property_based_on,
-    check_arithmetic_compatibility,
     deprecated,
 )
 from sunpy.util.exceptions import warn_user
@@ -106,27 +109,150 @@ to the standard PC_ij described in section 6.1 of :cite:t:`calabretta_representa
 __all__ = ['GenericMap', 'MapMetaValidationError', 'PixelPair']
 
 
-class GenericMap(MapMetaMixin, NDData):
+# We want to deprecate the old ``GenericMap.__init__``, but without
+# breaking the old constructor right away, The main complication with
+# this is that if an non-updated class calls ``super().__init__`` with
+# the old signature, so we also need to inject a class above an old
+# class to translate the call in the old class to it's superclass to
+# the new signature as well.  So we define two decorators (wrappers)
+# which convert in both directions.
+def old_to_new_converter(old_init):
+    """
+    Wraps an old init to call it as a new init.
+    """
+    def wrapper(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        kwargs.update(
+            {
+                "wcs": wcs,
+                "uncertainty": uncertainty,
+                "mask": mask,
+                "unit": unit,
+                "copy": copy,
+                "psf": psf,
+                "extra_coords": extra_coords,
+                "global_coords": global_coords,
+                "plot_settings": plot_settings,
+            }
+        )
+        return old_init(self, data=data, header=meta, **kwargs)
+
+    # Pass wrapped through so we know we've wrapped it
+    wrapper.__wrapped__ = old_init
+    # But set the signature to the un-wrapped version
+    wrapper.__signature__ = inspect.signature(wrapper, follow_wrapped=False)
+    return wrapper
+
+
+def new_to_old_converter(new_init):
+    """
+    Wraps an new init to call it as a old init.
+    """
+    def wrapper(
+        self,
+        data,
+        header,
+        plot_settings=None,
+        **kwargs,
+    ):
+        return new_init(self, data=data, meta=header, plot_settings=plot_settings, **kwargs)
+
+    # Pass wrapped through so we know we've wrapped it
+    wrapper.__wrapped__ = new_init
+    # But set the signature to the un-wrapped version
+    wrapper.__signature__ = inspect.signature(wrapper, follow_wrapped=False)
+    return wrapper
+
+
+class GenericMapDeprecationMeta(ABCMeta):
+    """
+    A metaclass which translates old ``__init__`` methods to new ones.
+
+    This also injects a mixin class to override the ``super().__init__``.
+    """
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        original_init = namespace.get('__init__')
+        # Don't wrap again if we already wrapped
+        if original_init is not None and not hasattr(original_init, "__wrapped__"):
+            sig = inspect.signature(original_init)
+            if "header" in sig.parameters:
+                warn_deprecated("The old GenericMap(data, header, **kwargs) signature is deprecated in favour of the NDCube constructor signature. You should pass the header as the ``meta=header`` keyword argument.", stacklevel=2)
+                namespace['__init__'] = old_to_new_converter(original_init)
+                gmbase = [b for b in bases if issubclass(b, GenericMap)][0]
+                Translator = type(
+                    f"{gmbase.__name__}Translator",
+                    (object,),
+                    {"__init__": new_to_old_converter(gmbase.__init__)},
+                )
+                bases = (Translator,) + bases
+
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+
+class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
     """
     A Generic spatially-aware 2D data array
 
     Parameters
     ----------
-    data : `numpy.ndarray`, list
-        A 2d list or ndarray containing the map data.
-    header : dict
-        A dictionary of the original image header tags.
+    data : array-like or `ndcube.NDCube` or `astropy.nddata.NDData`
+        The array holding the actual data in this object.
+
+    wcs : `astropy.wcs.WCS` or `None`
+        A WCS to apply over the ``meta=`` (header). If only a ``wcs``
+        is provided and not a ``meta`` the WCS is converted to a
+        header and used in lieu of ``meta``.
+
+    uncertainty : Any, optional
+        Uncertainty in the dataset. Should have an attribute uncertainty_type
+        that defines what kind of uncertainty is stored, for example "std"
+        for standard deviation or "var" for variance. A metaclass defining such
+        an interface is `~astropy.nddata.NDUncertainty` - but isn't mandatory.
+        If the uncertainty has no such attribute the uncertainty is stored as
+        `~astropy.nddata.UnknownUncertainty`.
+        Defaults to `None`.
+
+    mask : Any, optional
+        Mask for the dataset. Masks should follow the numpy convention
+        that valid data points are marked by `False` and invalid ones with `True`.
+        Defaults to `None`.
+
+    meta : dict-like
+        A FITS header like object to build the map from. **Required, unless ``wcs`` is given.**
+
+    unit : `astropy.units.Unit` or `str`, optional
+        Unit to record in BUNIT. Overrides any existing BUNIT in ``meta`` - does not convert
+        the data array. Use this to set the unit of the data after converting it. e.g. when
+        converting units from counts to counts per second.
+        Default is `None`, which leaves the unit to BUNIT.
+
+    copy : bool, optional
+        Indicates whether to save the arguments as copy. `True` copies every attribute
+        before saving it while `False` tries to save every parameter as reference.
+        Note however that it is not always possible to save the input as reference.
+        Default is `False`.
+
     plot_settings : dict, optional
         Plot settings.
 
     Other Parameters
     ----------------
-    unit : unit-like, optional
-        Unit to record in BUNIT. Overrides any existing BUNIT in header - does not convert the data array.
-        Use this to set the unit of the data after converting it. e.g. when converting units from counts
-        to counts per second.
     **kwargs :
-        Additional keyword arguments are passed to `~astropy.nddata.NDData`
+        Additional keyword arguments are passed to `~ndcube.NDCube`
         init.
 
 
@@ -230,7 +356,34 @@ class GenericMap(MapMetaMixin, NDData):
             if f'{cls.__module__}.{cls.__name__}' not in  ["pfsspy.map.GongSynopticMap", "sunkit_magex.pfss.map.ADAPTMap"]:
                 cls._registry[cls] = cls.is_datasource_for
 
-    def __init__(self, data, header, plot_settings=None, **kwargs):
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        # These have to be set before calling the parent __init__, because
+        # NDCube.__init__ checks that the WCS is not None, which for a Map means
+        # building it from the metadata, which in turn needs these attributes.
+        self._nickname = None
+        # These are placeholders for default attributes, which are only set
+        # once if their data isn't present in the map metadata.
+        self._default_time = None
+        self._default_dsun = None
+        self._default_carrington_longitude = None
+        self._default_heliographic_latitude = None
+        self._default_heliographic_longitude = None
+
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -245,41 +398,146 @@ class GenericMap(MapMetaMixin, NDData):
             warn_user("This file contains more than 2 dimensions. "
                       "Data will be truncated to the first two dimensions.")
 
-        params = list(inspect.signature(NDData).parameters)
-        nddata_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
-        super().__init__(data, meta=MetaDict(header), **nddata_kwargs)
+        # Remove after deprecation
+        # Support the old header kwarg
+        header = kwargs.pop("header", None)
+        if header is not None:
+            if meta is None:
+                meta = header
+                warn_deprecated("The header= keyword argument is deprecated, use meta=")
+            else:
+                raise TypeError("Passing header and meta is not supported, just use meta.")
 
-        # `.unit` reads BUNIT, not the value NDData just stored, so an explicit unit is
-        # lost unless written there. Compared as units but note that this is done only so
-        # we can keep the original BUNIT if the constructor had received an equal unit
-        # e.g counts / pixel and ct / pix but not Erg and J.
-        if (unit := nddata_kwargs.get('unit')) is not None:
+        # Remove after deprecation
+        # Support the case where a header is passed instead of the wcs argument,
+        # This is normally only done as a positional argument
+        if meta is None and wcs is not None:
+            if not isinstance(wcs, (BaseLowLevelWCS, BaseHighLevelWCS)) and isinstance(wcs, Mapping):
+                meta = wcs
+                wcs = None
+                warn_deprecated(
+                    "Constructing a Map with a header as a positional argument is deprecated"
+                    ", use ``GenericMap(data, meta=header)``"
+                )
+
+        # If only a WCS is passed, convert it to a header and construct that way.
+        # If both are passed then the WCS takes precedence, as it is
+        # applied after the super().__init__ call.
+        if meta is None and wcs is not None:
+            # unwrap and validate that it's a FITS WCS
+            wcs, _ = unwrap_wcs_to_fitswcs(wcs)
+            meta = wcs.to_header(relax=True)
+            wcs = None
+
+        # We can't make meta a required argument in the signature
+        # without breaking NDCube compatibility.
+        if meta is None:
+            raise TypeError("Missing required argument 'meta'.")
+
+        # We can get superfluous kwargs from the factories so strip them out here
+        params = list(inspect.signature(NDCube).parameters)
+        ndcube_kwargs = {x: kwargs.pop(x) for x in params & kwargs.keys()}
+        # `.unit` reads BUNIT, not the value NDCube stores, so an explicit unit is lost
+        # unless written there. It has to be written before the NDCube constructor, as
+        # that attaches the uncertainty, which takes or checks its unit against `.unit`.
+        # Compared as units so that the original BUNIT is kept if the constructor
+        # received an equal unit e.g counts / pixel and ct / pix but not Erg and J.
+        meta = MetaDict(meta)
+        if unit is not None:
             unit = u.Unit(unit)
+            # Sources can override `.unit` (e.g. AIA falls back to PIXLUNIT), so the
+            # metadata is attached early to compare against that rather than BUNIT
+            self.meta = meta
             if self.unit != unit:
-                self.meta['bunit'] = unit.to_string()
+                meta['bunit'] = unit.to_string()
+        # The WCS is derived from the metadata, so pass None here. The
+        # wcs is built by the NDCube constructor when it accesses the
+        # `.wcs` property.
+        super().__init__(
+            data,
+            wcs=None,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            **ndcube_kwargs,
+        )
+        # After the NDCube constructor has run there is now metadata for the setter
+        self.wcs = wcs
 
-        # Setup some attributes
-        self._nickname = None
-        # These are placeholders for default attributes, which are only set
-        # once if their data isn't present in the map metadata.
-        self._default_time = None
-        self._default_dsun = None
-        self._default_carrington_longitude = None
-        self._default_heliographic_latitude = None
-        self._default_heliographic_longitude = None
-
-        # Validate header
-        # TODO: This should be a function of the header, not of the map
-        self._validate_meta()
-        self.plotter = MapPlotter(self)
+        # The plotter is an NDCube descriptor, so it is assigned the plotter
+        # class rather than an instance of it.
+        self.plotter = MapPlotter
         if plot_settings:
-            self.plot_settings.update(plot_settings)
+            self.plotter.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
-        """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-            "The ability to index Map by physical"
-            " coordinate is not yet implemented.")
+        def format_slice(key):
+            if not isinstance(key, slice):
+                return f"{key}"
+            start = "" if key.start is None else key.start
+            stop = "" if key.stop is None else key.stop
+            step = "" if key.step is None else f":{key.step}"
+            return f"{start}:{stop}{step}"
+
+        if not isinstance(key, tuple):
+            key = (key,)
+
+        if any(intidx := [isinstance(k, numbers.Integral) for k in key]):
+            # -1 is special-cased because k+1 is then 0, which reads as the start of
+            # the axis rather than one past the end.
+            strslice = ", ".join([(f"{int(k)}:" if k == -1 else f"{int(k)}:{int(k)+1}")
+                                  if isint else format_slice(k)
+                                  for k, isint in zip(key, intidx)])
+            raise TypeError(
+                "It is not possible to slice a map with an integer as it will "
+                "reduce the number of data dimensions by one.\nIn order to "
+                "apply the same slice without dropping a dimension do "
+                f"mymap[{strslice}]."
+            )
+
+        # astropy's SlicedLowLevelWCS rejects a step, so catch it here to say something
+        # more useful than "Slicing WCS with a step is not supported".
+        if any(isinstance(k, slice) and k.step not in (None, 1) for k in key):
+            raise IndexError(
+                "It is not possible to slice a map with a step. To reduce the "
+                "resolution of a map use GenericMap.superpixel, noting that it "
+                "combines pixels rather than discarding them."
+            )
+
+        # Resolved against the shape so that negative and out-of-range bounds are
+        # measured the same way numpy would.
+        for axis, (k, length) in enumerate(zip(key, self.data.shape)):
+            if isinstance(k, slice) and len(range(length)[k]) == 0:
+                raise IndexError(
+                    "It is not possible to slice a map down to a length-0 axis, as "
+                    f"the result would have no data. mymap[{', '.join(map(format_slice, key))}] "
+                    f"gives a length-0 axis at position {axis}."
+                )
+
+        new_map = super().__getitem__(key)
+        # preserve plot settings
+        new_map.plot_settings.update(self.plot_settings)
+        return new_map
+
+    # A map should never drop a dimension, so these default to keepdims=True rather than
+    # NDCube's False.
+    def crop(self, *points, wcs=None, keepdims=True):
+        return super().crop(*points, wcs=wcs, keepdims=keepdims)
+
+    def crop_by_values(self, *points, units=None, wcs=None, keepdims=True):
+        return super().crop_by_values(*points, units=units, wcs=wcs, keepdims=keepdims)
+
+    @wraps(NDCube.rebin)
+    def rebin(self, *args, **kwargs):
+        new_map = super().rebin(*args, **kwargs)
+        # preserve plot settings
+        new_map.plot_settings.update(self.plot_settings)
+        return new_map
 
     def _text_summary(self):
         dt = self.exposure_time
@@ -513,17 +771,26 @@ class GenericMap(MapMetaMixin, NDData):
                 </html>"""))
         webbrowser.open_new_tab(url)
 
-    @classmethod
-    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
+    def _new_instance(self, *args, **kwargs):
         """
-        Instantiate a new instance of this class using given data.
-        This is a shortcut for ``type(self)(data, meta, plot_settings)``.
+        Instantiate a new instance of this class, carrying over anything the caller
+        does not replace.
         """
-        new_map = cls(data, meta, **kwargs)
-        # plot_settings are set explicitly here as some map sources
-        # explicitly set some of the plot_settings in the constructor
-        # and we want to preserve the plot_settings of the previous
-        # instance.
+        # Packages built on sunpy call this with the old positional
+        # ``(data, meta, plot_settings)`` signature, so keep accepting it.
+        kwargs.update(zip(("data", "meta", "plot_settings"), args))
+        # NDCube carries the mask and uncertainty over, but they only describe the data
+        # if it keeps its shape, which e.g. resample and rotate do not.
+        if "data" in kwargs and np.shape(kwargs["data"]) != self.data.shape:
+            kwargs.setdefault("mask", None)
+            kwargs.setdefault("uncertainty", None)
+        plot_settings = kwargs.pop("plot_settings", None)
+        # The WCS is built from the metadata, so it must not be carried over as well:
+        # the setter would write this map's WCS back over whatever metadata is given.
+        kwargs.setdefault("wcs", None)
+        new_map = super()._new_instance(**kwargs)
+        # Applied after the map is built because some map sources set plot_settings in
+        # their own constructor, which would otherwise overwrite these.
         if plot_settings is not None:
             new_map.plot_settings.update(plot_settings)
         return new_map
@@ -540,54 +807,6 @@ class GenericMap(MapMetaMixin, NDData):
     def quantity(self):
         """Unitful representation of the map data."""
         return u.Quantity(self.data, self.unit, copy=_NUMPY_COPY_IF_NEEDED)
-
-    def _new_instance_from_op(self, new_data):
-        """
-        Helper function for creating new map instances after arithmetic
-        operations.
-        """
-        new_meta = copy.deepcopy(self.meta)
-        new_meta['bunit'] = new_data.unit.to_string()
-        return self._new_instance(new_data.value, new_meta, plot_settings=self.plot_settings)
-
-    def __neg__(self):
-        return self._new_instance(-self.data, self.meta, plot_settings=self.plot_settings)
-
-    @check_arithmetic_compatibility
-    def __pow__(self, value):
-        new_data = self.quantity ** value
-        return self._new_instance_from_op(new_data)
-
-    @check_arithmetic_compatibility
-    def __add__(self, value):
-        new_data = self.quantity + value
-        return self._new_instance_from_op(new_data)
-
-    def __radd__(self, value):
-        return self.__add__(value)
-
-    def __sub__(self, value):
-        return self.__add__(-value)
-
-    def __rsub__(self, value):
-        return self.__neg__().__add__(value)
-
-    @check_arithmetic_compatibility
-    def __mul__(self, value):
-        new_data = self.quantity * value
-        return self._new_instance_from_op(new_data)
-
-    def __rmul__(self, value):
-        return self.__mul__(value)
-
-    @check_arithmetic_compatibility
-    def __truediv__(self, value):
-        return self.__mul__(1/value)
-
-    @check_arithmetic_compatibility
-    def __rtruediv__(self, value):
-        new_data = value / self.quantity
-        return self._new_instance_from_op(new_data)
 
     @property
     @cached_property_based_on('_meta_hash')
@@ -614,7 +833,19 @@ class GenericMap(MapMetaMixin, NDData):
         provided by the `.date_end` property, which normally returns a value only if the
         DATE-END key is in the metadata.
         """
-        w2 = astropy.wcs.WCS(naxis=2)
+        # The metadata has to be validated before the WCS is built, but it is not
+        # available until the parent __init__ has run, which is also what triggers
+        # the first build. Doing it here is the only point where both are true.
+
+        # Validate meta before building the WCS, to emit useful errors.
+        self._validate_meta()
+
+        # Keep the celestial axes in the units of the metadata rather than letting
+        # wcslib convert them to degrees. When they already are degrees there is
+        # nothing to preserve and cause a  segfaults if cdelt or crval are
+        # set after set() can remove after astropy 8.0.2 with astropy#20418
+        preserve_units = any(unit is not None and unit != u.deg for unit in self.spatial_units)
+        w2 = astropy.wcs.WCS(naxis=2, preserve_units=preserve_units)
 
         # Add one to go from zero-based to one-based indexing
         w2.wcs.crpix = u.Quantity(self.reference_pixel) + 1 * u.pix
@@ -638,19 +869,12 @@ class GenericMap(MapMetaMixin, NDData):
             w2.wcs.datebeg = self.date_start.utc.isot
         if self.date_end is not None:
             w2.wcs.dateend = self.date_end.utc.isot
+        # used to be called implicitly but now have call manually
+        w2.wcs.datfix()
 
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
-            # Clear all the aux information that was set earlier. This is to avoid
-            # issues with maps that store multiple observer coordinate keywords.
-            # Note that we have to create a new WCS as it's not possible to modify
-            # wcs.wcs.aux in place.
-            header = w2.to_header()
-            for kw in ['crln_obs', 'dsun_obs', 'hgln_obs', 'hglt_obs']:
-                header.pop(kw, None)
-            w2 = astropy.wcs.WCS(header)
-
             # Get observer coord, and set the aux information
             obs_coord = self.observer_coordinate
             sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
@@ -666,6 +890,80 @@ class GenericMap(MapMetaMixin, NDData):
         # Validate the WCS here.
         w2.wcs.set()
         return w2
+
+    @wcs.setter
+    def wcs(self, wcs):
+        """
+        Map uses the meta dict as the source of truth.
+        Setting the WCS updates the metadata while preserving the map's spatial units.
+        Assigning a WCS with different spatial units raises `ValueError`.
+        """
+        # A Map is constructed with wcs=None, so there is nothing to merge in that case
+        if wcs is None:
+            return
+        # Unwrap any wrapper classes to FITS WCS
+        unwrapped, _ = unwrap_wcs_to_fitswcs(wcs)
+        # Convert to a header. wcslib omits NAXIS, so it has to be added back or the
+        # metadata keeps describing the shape of the array we started with.
+        # relax=True so non-standard keywords (e.g. SIP) are kept rather than warned about
+        new_header = unwrapped.to_header(relax=True)
+        # Internal WCS operations should preserve units. Reject changes before modifying
+        # metadata, using spatial_units to handle implicit or non-FITS CUNIT values.
+        for axis, unit in enumerate(self.spatial_units, start=1):
+            incoming_unit = u.Unit(new_header.get(f"CUNIT{axis}", ""))
+            if incoming_unit != unit:
+                raise ValueError(
+                    f"Setting a WCS with different spatial units is not supported: "
+                    f"axis {axis} uses {incoming_unit}, but the map uses {unit}."
+                )
+        # A WCS built from a header without NAXIS does not know the shape, in which
+        # case we can take the shape from the shape of the data
+        pixel_shape = unwrapped.pixel_shape or self.data.shape[::-1]
+        for n, length in enumerate(pixel_shape, start=1):
+            new_header[f"NAXIS{n}"] = length
+        # The getter hands out its cached WCS, which the caller may have edited in
+        # place before assigning it back, so rebuild the current WCS from the
+        # metadata rather than comparing the new WCS against itself.
+        self.__dict__.get("_cached_properties", {}).pop("wcs", None)
+        old_wcs = self.wcs
+        # Must use the same relax as new_header for the comparison below
+        old_wcs_header = old_wcs.to_header(relax=True)
+        # Reduce the new header to just the keys which differ from the current WCS
+        changed_header = {key: value for key, value in new_header.items()
+            if key not in old_wcs_header or value != old_wcs_header[key]
+        }
+
+        # The WCS always expresses rotation and scale as PC and CDELT. Only when these
+        # change do CROTA (rotation) and CD (rotation and scale) in the metadata stop
+        # describing the map, so only then replace them, otherwise keep the metadata's
+        # own convention.
+        pc = unwrapped.wcs.get_pc()
+        pc_changed = not np.array_equal(pc, old_wcs.wcs.get_pc())
+        cdelt_changed = not np.array_equal(unwrapped.wcs.get_cdelt(), old_wcs.wcs.get_cdelt())
+        to_drop = ['CROTA1', 'CROTA2'] if pc_changed else []
+        if pc_changed or cdelt_changed:
+            to_drop += ['CD1_1', 'CD1_2', 'CD2_1', 'CD2_2']
+            dropped = [key for key in to_drop if self.meta.pop(key, None) is not None]
+            # Write the whole linear transform. The header leaves out PC entries at
+            # their default values, so an entry changed back to its default (e.g. the
+            # identity) would otherwise keep its old value in the metadata, as would
+            # the entries previously implied by the keys just dropped.
+            if pc_changed or dropped:
+                changed_header.update({f"PC{i}_{j}": pc[i - 1, j - 1] for i in (1, 2) for j in (1, 2)})
+            changed_header.update({k: v for k, v in new_header.items() if k.startswith("CDELT")})
+            # Explicit units distinguish WCS scales from legacy source values
+            # (e.g. GONG sine-latitude steps), while retaining existing spellings.
+            changed_header.update({k: v for k, v in new_header.items()
+                                   if k.startswith("CUNIT") and k not in self.meta})
+
+        # Similarly the new WCS carries its own PV values, so if they differ, replace
+        # all of the old ones rather than only updating the ones that changed.
+        if sorted(unwrapped.wcs.get_pv()) != sorted(old_wcs.wcs.get_pv()):
+            for i, m, _ in self._pv_values:
+                self.meta.pop(f'PV{i}_{m}', None)
+            changed_header.update({k: v for k, v in new_header.items() if k.startswith("PV")})
+
+        self.meta.update(MetaDict(changed_header))
 
     def _as_mpl_axes(self):
         """
@@ -788,7 +1086,7 @@ class GenericMap(MapMetaMixin, NDData):
         new_meta['crval2'] = ((self._reference_latitude + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
-        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
+        new_map = self._new_instance(data=self.data, meta=new_meta, plot_settings=self.plot_settings)
 
         return new_map
 
@@ -960,7 +1258,9 @@ class GenericMap(MapMetaMixin, NDData):
         new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        # The data has been transformed, so the mask and uncertainty no longer describe it
+        new_map = self._new_instance(data=new_data, meta=new_meta, mask=None, uncertainty=None,
+                                     plot_settings=self.plot_settings)
         return new_map
 
     @add_common_docstring(rotation_function_names=_rotation_function_names)
@@ -1155,12 +1455,15 @@ class GenericMap(MapMetaMixin, NDData):
         new_meta.pop('CD2_2', None)
 
         # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        # The data has been transformed, so the mask and uncertainty no longer describe it
+        new_map = self._new_instance(data=new_data, meta=new_meta, mask=None, uncertainty=None,
+                                     plot_settings=self.plot_settings)
 
         return new_map
 
     @u.quantity_input
-    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None):
+    def submap(self, bottom_left, *, top_right=None, width: (u.deg, u.pix) = None, height: (u.deg, u.pix) = None,
+               copy=True):
         """
         Returns a submap defined by a rectangle.
 
@@ -1185,6 +1488,10 @@ class GenericMap(MapMetaMixin, NDData):
             The width of the rectangle. Required if ``top_right`` is omitted.
         height : `astropy.units.Quantity`
             The height of the rectangle. Required if ``top_right`` is omitted.
+        copy : `bool`, optional
+            If `True`, the submap's data, mask and uncertainty are copies of the parent
+            map's. If `False` they are views onto the parent map, which cannot then be
+            garbage collected separately from the submap. Defaults to `True`.
 
         Returns
         -------
@@ -1287,9 +1594,15 @@ class GenericMap(MapMetaMixin, NDData):
         if ([arg is not None for arg in (top_right, width, height)]
                 not in [[True, False, False], [False, False, False], [False, True, True]]):
             raise ValueError("Either top_right alone or both width and height must be specified.")
-        # parse input arguments
-        pixel_corners = u.Quantity(self._parse_submap_input(
-            bottom_left, top_right, width, height)).T
+        # Parse input arguments into the four corners of the rectangle
+        world_corners = self._parse_submap_input(bottom_left, top_right, width, height)
+        # Pixel input is parsed in pixel coordinates, so that the plotter can reuse the
+        # parser to place a quadrangle. ``crop`` needs world coordinates, and
+        # ``pixel_to_world`` takes bare values, so any pixel-equivalent unit (e.g. mpix)
+        # has to be normalised to pix rather than passed through.
+        if isinstance(world_corners[0], u.Quantity):
+            world_corners = tuple(self.wcs.pixel_to_world(*corner.to_value(u.pix))
+                                  for corner in world_corners)
 
         msg = (
             "The provided input coordinates to ``submap`` when transformed to the target "
@@ -1299,60 +1612,23 @@ class GenericMap(MapMetaMixin, NDData):
             "`sunpy.coordinates.SphericalScreen()` context manager) that allows "
             "such coordinates to be interpreted as 3D coordinates."
         )
+        pixel_corners = [self.wcs.world_to_pixel(corner) for corner in world_corners]
         if np.any(np.isnan(pixel_corners)):
             raise ValueError(msg)
 
-        # The pixel corners result is in Cartesian order, so the first index is
-        # columns and the second is rows.
-        bottom = np.min(pixel_corners[1]).to_value(u.pix)
-        top = np.max(pixel_corners[1]).to_value(u.pix)
-        left = np.min(pixel_corners[0]).to_value(u.pix)
-        right = np.max(pixel_corners[0]).to_value(u.pix)
-
-        # Round the lower left pixel to the nearest integer
-        # We want 0.5 to be rounded up to 1, so use floor(x + 0.5)
-        bottom = np.floor(bottom + 0.5)
-        left = np.floor(left + 0.5)
-
-        # Round the top right pixel to the nearest integer, then add 1 for array indexing
-        # We want e.g. 2.5 to be rounded down to 2, so use ceil(x - 0.5)
-        top = np.ceil(top - 0.5) + 1
-        right = np.ceil(right - 0.5) + 1
-
-        # Clip pixel values to max of array, prevents negative
-        # indexing
-        bottom = int(np.clip(bottom, 0, self.data.shape[0]))
-        top = int(np.clip(top, 0, self.data.shape[0]))
-        left = int(np.clip(left, 0, self.data.shape[1]))
-        right = int(np.clip(right, 0, self.data.shape[1]))
-
-        arr_slice = np.s_[bottom:top, left:right]
-        # Get ndarray representation of submap
-        new_data = self.data[arr_slice].copy()
-
-        # Make a copy of the header with updated centering information
-        new_meta = self.meta.copy()
-        # Add one to go from zero-based to one-based indexing
-        new_meta['crpix1'] = self.reference_pixel.x.to_value(u.pix) + 1 - left
-        new_meta['crpix2'] = self.reference_pixel.y.to_value(u.pix) + 1 - bottom
-        new_meta['naxis1'] = new_data.shape[1]
-        new_meta['naxis2'] = new_data.shape[0]
-
-        # Create new map instance
-        if self.mask is not None:
-            new_mask = self.mask[arr_slice].copy()
-            # Create new map with the modification
-            new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
-            return new_map
-        # Create new map with the modification
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+        new_map = self.crop(*world_corners, keepdims=True)
+        if copy:
+            # ``crop`` slices, so the result is a view onto this map. Copy all of it,
+            # not only the arrays, so nothing (e.g. the plot norm) is shared.
+            new_map = deepcopy(new_map)
         return new_map
 
     @seconddispatch
     def _parse_submap_input(self, bottom_left, top_right, width, height):
         """
-        Should take any valid input to submap() and return bottom_left and
-        top_right in pixel coordinates.
+        Should take any valid input to submap() and return the four corners of
+        the rectangle, as pixel coordinates for a `~astropy.units.Quantity` input
+        or as world coordinates for a coordinate input.
         """
 
     @_parse_submap_input.register(u.Quantity)
@@ -1380,6 +1656,8 @@ class GenericMap(MapMetaMixin, NDData):
 
         top_left = u.Quantity([top_right[0], bottom_left[1]])
         bottom_right = u.Quantity([bottom_left[0], top_right[1]])
+        # These are returned as pixel coordinates because the plotter uses this method
+        # to place a quadrangle in pixel space. ``submap`` converts them itself.
         return bottom_left, top_left, top_right, bottom_right
 
     @_parse_submap_input.register(SkyCoord)
@@ -1441,77 +1719,30 @@ class GenericMap(MapMetaMixin, NDData):
         out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
         """
-
-        # Note: because the underlying ndarray is transposed in sense when
-        #   compared to the Map, the ndarray is transposed, resampled, then
-        #   transposed back.
-        # Note: "center" defaults to True in this function because data
-        #   coordinates in a Map are at pixel centers.
-
         if (offset.value[0] < 0) or (offset.value[1] < 0):
             raise ValueError("Offset is strictly non-negative.")
 
-        # These are rounded by int() in reshape_image_to_4d_superpixel,
-        # so round here too for use in constructing metadata later.
+        # Superpixels and the offset are a whole number of pixels
         dimensions = [int(dim) for dim in dimensions.to_value(u.pix)]
         offset = [int(off) for off in offset.to_value(u.pix)]
 
-        # Make a copy of the original data, perform reshaping, and apply the
-        # function.
-        if self.mask is not None:
-            data = np.ma.array(self.data.copy(), mask=self.mask)
-        else:
-            data = self.data.copy()
+        if self.mask is not None and conservative_mask ^ (func in [np.sum, np.prod]):
+            log.info(
+                f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
+                "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
+                "False for mean/median/std/min/max."
+                )
 
-        reshaped_data = reshape_image_to_4d_superpixel(data, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
-        new_array = func(func(reshaped_data, axis=3), axis=1)
+        # rebin requires the bin shape to divide the array shape exactly, so slice off the offset at the start
+        # and any partial superpixels at the end.
+        bin_shape = np.array([dimensions[1], dimensions[0]])
+        start = np.array([offset[1], offset[0]])
+        n_superpixels = (np.array(self.shape) - start) // bin_shape
+        stop = start + n_superpixels * bin_shape
+        cropped = self[start[0]:stop[0], start[1]:stop[1]]
 
-        if self.mask is not None:
-            if conservative_mask ^ (func in [np.sum, np.prod]):
-                log.info(
-                    f"Using conservative_mask={conservative_mask} for function {func.__name__}, "
-                    "which may not be ideal. Recommended: conservative_mask=True for sum/prod, "
-                    "False for mean/median/std/min/max."
-                    )
-
-            if conservative_mask:
-                reshaped_mask = reshape_image_to_4d_superpixel(self.mask, [dimensions[1], dimensions[0]], [offset[1], offset[0]])
-                new_mask = np.any(reshaped_mask, axis=(3, 1))
-            else:
-                new_mask = np.ma.getmaskarray(new_array)
-        else:
-            new_mask = None
-
-        # Update image scale and number of pixels
-
-        # create copy of new meta data
-        new_meta = self.meta.copy()
-
-        # Update metadata
-        for key in {'cdelt1', 'cd1_1', 'cd2_1'} & self.meta.keys():
-            new_meta[key] *= dimensions[0]
-        for key in {'cdelt2', 'cd1_2', 'cd2_2'} & self.meta.keys():
-            new_meta[key] *= dimensions[1]
-        if 'pc1_1' in self.meta:
-            new_meta['pc1_2'] *= dimensions[1] / dimensions[0]
-            new_meta['pc2_1'] *= dimensions[0] / dimensions[1]
-
-        new_meta['crpix1'] = ((self.reference_pixel.x.to_value(u.pix) +
-                               0.5 - offset[0]) / dimensions[0]) + 0.5
-        new_meta['crpix2'] = ((self.reference_pixel.y.to_value(u.pix) +
-                               0.5 - offset[1]) / dimensions[1]) + 0.5
-        new_meta['naxis1'] = new_array.shape[1]
-        new_meta['naxis2'] = new_array.shape[0]
-
-        # Create new map instance
-        if self.mask is not None:
-            new_data = np.ma.getdata(new_array)
-        else:
-            new_data = new_array
-
-        # Create new map with the modified data
-        new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
-        return new_map
+        return cropped.rebin(bin_shape, operation=func,
+                             handle_mask=np.any if conservative_mask else np.all)
 
 # #### Visualization #### #
 
@@ -1727,53 +1958,50 @@ class GenericMap(MapMetaMixin, NDData):
 
         .. minigallery:: sunpy.map.GenericMap.reproject_to
         """
-        if not isinstance(target_wcs, astropy.wcs.WCS):
-            target_wcs = astropy.wcs.WCS(target_wcs)
-
-        # Select the desired reprojection algorithm
-        functions = {'interpolation': reproject.reproject_interp,
-                     'adaptive': reproject.reproject_adaptive,
-                     'exact': reproject.reproject_exact}
-        if algorithm not in functions:
-            raise ValueError(f"The specified algorithm must be one of: {list(functions.keys())}")
-        func = functions[algorithm]
+        if isinstance(target_wcs, (dict, astropy.io.fits.Header)):
+            target_wcs = astropy.wcs.WCS(header=target_wcs, preserve_units=True)
+        else:
+            # Unwrap any wrapper classes, e.g. a SlicedLowLevelWCS, to a FITS WCS, as
+            # the extent and date handling below need the FITS keywords.
+            target_wcs, _ = unwrap_wcs_to_fitswcs(target_wcs)
 
         if auto_extent not in ['all', 'edges', 'corners', None]:
             raise ValueError("The allowed options for `auto_extent` are 'all', 'edges', 'corners', or None.")
         if auto_extent is not None:
             left, right, bottom, top = extent_in_other_wcs(self.wcs, target_wcs, original_shape=self.data.shape,
-                                                            method=auto_extent, integers=True)
+                                                           method=auto_extent, integers=True)
             target_wcs.wcs.crpix -= [left, bottom]
             target_wcs.pixel_shape = [right - left + 1, top - bottom + 1]
 
-        # reproject does not automatically grab the array shape from the WCS instance
-        if target_wcs.array_shape is not None:
-            reproject_args.setdefault('shape_out', target_wcs.array_shape)
+        # NDCube constructs its result using type(self). Use a plain NDCube so
+        # it does not combine a Map subclass's source metadata with the target WCS.
+        source = NDCube(self.data, wcs=self.wcs)
+        output = source.reproject_to(target_wcs, algorithm=algorithm,
+                                     return_footprint=return_footprint, **reproject_args)
+        outmap, footprint = output if return_footprint else (output, None)
 
-        # Reproject the array
-        output_array = func(self, target_wcs, return_footprint=return_footprint, **reproject_args)
-        if return_footprint:
-            output_array, footprint = output_array
+        # Build from the target WCS alone, going back through the factory so that
+        # the class matches the target metadata rather than the source map.
+        new_meta = MetaDict(target_wcs.to_header(relax=True))
+        for n in range(1, target_wcs.naxis + 1):
+            new_meta[f"NAXIS{n}"] = outmap.data.shape[::-1][n - 1]
 
-        target_header = target_wcs.to_header(relax=True)
         if preserve_date_obs:
             # Explicitly not using _set_date or _set_reference_date. We do not know whether
-            # target_header has a DATE-AVG key and if it does not, we would inadvertently
+            # the target has a DATE-AVG key and if it does not, we would inadvertently
             # overwrite DATE-OBS (that we are supposed to be preserving).
-            if (ref_date := target_header.get('DATE-AVG', target_header.get('DATE-OBS'))) is None:
+            if not (ref_date := target_wcs.wcs.dateavg or target_wcs.wcs.dateobs):
                 raise ValueError("The target_wcs has neither a DATE-AVG or DATE-OBS. It is ambiguous "
                                  "as to what date should be used as reference date in the target header. "
                                  "To avoid this, either set DATE-AVG or DATE-OBS on target_wcs or "
                                  "set preserve_date_obs=False.")
-            target_header['DATE-AVG'] = ref_date
-            target_header['DATE-OBS'] = self.date.utc.isot
+            new_meta['DATE-AVG'] = ref_date
+            new_meta['DATE-OBS'] = self.date.utc.isot
 
-        # Create and return a new GenericMap
-        outmap = GenericMap(output_array, target_header,
-                            plot_settings=self.plot_settings)
+        outmap = sunpy.map.Map(outmap.data, new_meta, plot_settings=self.plot_settings)
 
-        # Check rsun mismatch
-        if self.rsun_meters != outmap.rsun_meters:
+        # Compared with a tolerance because a WCS round-tripped through a FITS header carries float noise
+        if not u.isclose(self.rsun_meters, outmap.rsun_meters, rtol=1e-11):
             warn_user("rsun mismatch detected: "
                       f"{self.name}.rsun_meters={self.rsun_meters}; {outmap.name}.rsun_meters={outmap.rsun_meters}. "
                       "This might cause unexpected results during reprojection.")

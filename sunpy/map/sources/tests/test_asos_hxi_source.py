@@ -10,7 +10,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.asos import HXIMap
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from .helpers import _test_private_date_setters
 
 
@@ -88,15 +88,14 @@ def test_new_instance_preserves_plot_settings(hxi_map):
     # that _new_instance persists the old custom plot_settings
     hxi_map.plot_settings['norm'] = ImageNormalize(vmin=0.1, vmax=42)
     hxi_map.plot_settings['cmap'] = 'inferno'
-    new_hxi_map = hxi_map._new_instance(hxi_map.data,
-                                        hxi_map.meta,
+    new_hxi_map = hxi_map._new_instance(data=hxi_map.data, meta=hxi_map.meta,
                                         plot_settings=hxi_map.plot_settings)
     assert new_hxi_map.plot_settings['norm'].vmin == hxi_map.plot_settings['norm'].vmin
     assert new_hxi_map.plot_settings['norm'].vmax == hxi_map.plot_settings['norm'].vmax
     assert new_hxi_map.plot_settings['cmap'] == hxi_map.plot_settings['cmap']
     # If no plot settings are explicitly passed, the plot_settings should fall back to those
     # in the constructor
-    new_hxi_map = hxi_map._new_instance(hxi_map.data, hxi_map.meta)
+    new_hxi_map = hxi_map._new_instance(data=hxi_map.data, meta=hxi_map.meta)
     assert new_hxi_map.plot_settings['norm'].vmin is None
     assert new_hxi_map.plot_settings['norm'].vmax is None
     assert new_hxi_map.plot_settings['cmap'] == new_hxi_map._get_cmap_name()
@@ -105,3 +104,10 @@ def test_new_instance_preserves_plot_settings(hxi_map):
 def test_wcs(hxi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     hxi_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(hxi_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = HXIMap(hxi_map.data, hxi_map.meta)
+    assert isinstance(smap, HXIMap)

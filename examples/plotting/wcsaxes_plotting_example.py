@@ -36,20 +36,20 @@ my_map.plot(axes=ax, clip_interval=(1, 99.9)*u.percent)
 # line from the Sun center (at 0, 0) to the point (500, 500) in arcsecs.
 # When plotting a map a WCSAxes is created.
 # For plotting with WCSAxes, pixel coordinates are expected as a default, however,
-# we can plot world coordinates (i.e. arcsec) by using the ``transform`` keyword.
-# Its important to note that when transforming between world and pixel coordinates
-# the world coordinates need to be in degrees rather than arcsecs.
+# we can plot world coordinates (i.e. arcsec) by passing a
+# `~astropy.coordinates.SkyCoord` to
+# `~astropy.visualization.wcsaxes.WCSAxes.plot_coord`, which converts them to
+# pixel coordinates for us.
 
 # sphinx_gallery_defer_figures
 
 xx = np.arange(0, 500) * u.arcsec
 yy = xx
+line = SkyCoord(xx, yy, frame=my_map.coordinate_frame)
 
-# Note that the coordinates need to be in degrees rather than arcseconds.
-ax.plot(xx.to(u.deg), yy.to(u.deg),
-        color='r',
-        transform=ax.get_transform("world"),
-        label=f'WCS coordinate [{0*u.arcsec}, {500*u.arcsec}]')
+ax.plot_coord(line,
+              color='r',
+              label=f'WCS coordinate [{0*u.arcsec}, {500*u.arcsec}]')
 
 ###############################################################################
 # Here we will plot a point in pixel coordinates (i.e. array index).

@@ -74,6 +74,9 @@ class GONGSynopticMap(GenericMap):
 
     @property
     def scale(self):
+        # Explicit units identify a WCS scale rather than a sine-latitude step.
+        if 'cunit2' in self.meta:
+            return super().scale
         # Since, this map uses the cylindrical equal-area (CEA) projection,
         # the spacing should be modified to 180/pi times the original value
         # Reference: Section 5.5, Thompson 2006
@@ -111,6 +114,9 @@ class GONGHalphaMap(GenericMap):
 
     @property
     def scale(self):
+        # Prefer explicit WCS scales over the legacy limb-fit metadata.
+        if 'cdelt1' in self.meta and 'cdelt2' in self.meta:
+            return super().scale
         solar_r = self.meta['SOLAR-R'] * u.arcsec
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r/ (self.meta['FNDLMBMA'] * u.pixel))
@@ -165,8 +171,36 @@ class GONGMagnetogramMap(GenericMap):
     * `Instrument Paper (pp. 203-208) <https://inis.iaea.org/collection/NCLCollectionStore/_Public/20/062/20062491.pdf>`__
     * `GONG+ Documentation <https://gong.nso.edu/data/DMAC_documentation/PipelineMap/GlobalMap.html>`__
     """
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
         data_abs_max = np.nanmax(np.abs(self.data))
         self.plot_settings['norm'] =  SymLogNorm(50, vmin=-data_abs_max, vmax=data_abs_max)
 
@@ -203,6 +237,9 @@ class GONGMagnetogramMap(GenericMap):
 
     @property
     def scale(self):
+        # Prefer explicit WCS scales over the legacy limb-fit metadata.
+        if 'cdelt1' in self.meta and 'cdelt2' in self.meta:
+            return super().scale
         solar_r = (self.meta['SEMIDIAM'] * u.rad).to(u.arcsec)
         return SpatialPair(solar_r / (self.meta['FNDLMBMI'] * u.pixel),
                            solar_r / (self.meta['FNDLMBMA'] * u.pixel))

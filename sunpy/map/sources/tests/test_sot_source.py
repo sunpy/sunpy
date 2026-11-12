@@ -4,8 +4,12 @@ import pytest
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.hinode import SOTMap
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
+
+# The observer is now resolved when the map is constructed rather than on first
+# use of the WCS, so these maps emit the warning during fixture setup.
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 
 @pytest.fixture
@@ -82,5 +86,11 @@ def test_obstype(sot):
 
 def test_wcs(sot):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='assuming Earth-based observer'):
-        sot.wcs.pixel_to_world(0, 0)
+    sot.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(sot):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = SOTMap(sot.data, sot.meta)
+    assert isinstance(smap, SOTMap)
