@@ -1,0 +1,9 @@
+When a FITS file stores its data as scaled integers, `astropy.io.fits` applies the
+``BSCALE``/``BZERO`` scaling as the data is read.
+The metadata of the resulting `~sunpy.map.GenericMap` now reflects that: ``BSCALE`` and
+``BZERO`` are no longer present and ``BITPIX`` describes the scaled data rather than the
+integers on disk.
+Previously these keywords were carried over unchanged even though they no longer
+described the data they were paired with, which could lead to the scaling being applied
+a second time.
+Files that do not use ``BSCALE``/``BZERO`` are unaffected.
