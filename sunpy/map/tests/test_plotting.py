@@ -119,6 +119,21 @@ def test_rectangle_aia171_top_right(aia171_test_map):
     plt.legend()  # Check that the 'Rectangle' label shows up in the legend
 
 
+@pytest.mark.parametrize("frame", ["map", "hgs"])
+def test_quadrangle_anchor_pixel(aia171_test_map, frame):
+    # The quadrangle must be drawn at the right place whatever the units of the WCS
+    bottom_left = SkyCoord(100 * u.arcsec, 100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    if frame == "hgs":
+        bottom_left = bottom_left.transform_to(HeliographicStonyhurst(obstime=aia171_test_map.date))
+    ax = Figure().add_subplot(projection=aia171_test_map)
+    quad = aia171_test_map.draw_quadrangle(bottom_left, width=10 * u.deg, height=10 * u.deg, axes=ax)
+
+    anchor = quad.get_transform().transform(quad.get_path().vertices[:1])
+    anchor = ax.transData.inverted().transform(anchor)[0]
+    expected = aia171_test_map.wcs.world_to_pixel(bottom_left)
+    np.testing.assert_allclose(anchor, expected, atol=1e-6)
+
+
 @figure_test
 def test_quadrangle_aia17_width_height(aia171_test_map):
     aia171_test_map.plot()

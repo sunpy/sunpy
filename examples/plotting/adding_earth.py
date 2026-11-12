@@ -75,10 +75,10 @@ ax.pcolormesh(
     earth, shading='flat', transform=ax.get_transform(WCS(earth_wcs))
 )
 
+label_coord = SkyCoord(earth_x, earth_y + earth_diameter, frame=cutout_map.coordinate_frame)
 ax.text(
-    earth_x.to_value('deg'), (earth_y + earth_diameter).to_value('deg'),
-    'Earth to scale', color='white', fontsize=12, horizontalalignment='center',
-    transform=ax.get_transform('world')
+    *cutout_map.wcs.world_to_pixel(label_coord),
+    'Earth to scale', color='white', fontsize=12, horizontalalignment='center'
 )
 
 plt.show()

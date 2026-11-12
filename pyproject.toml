@@ -18,7 +18,7 @@ authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
 dependencies = [
-  "astropy>=7.0.0",
+  "astropy>=7.2.3,!=8.0.0,!=8.0.1",
   "fsspec>=2024.9.0",
   "numpy>=1.26.0",  # Not bumping numpy to 2.0 until we need to
   "numpy>=2.3.0;python_version=='3.14'",
