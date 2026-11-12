@@ -328,3 +328,19 @@ def test_local_expected_directory_doesnt_exist(tmp_path):
     meta = s._extract_files_meta(TimeRange("2025-01-01", "2025-01-02"))
     assert len(files) == 1
     assert len(meta) == 1
+
+
+def test_scraper_url_with_percent_encoding():
+    s = Scraper('https://example.com/solar%20data/{{year:4d}}/{{month:2d}}/file_{{year:4d}}{{month:2d}}{{day:2d}}.fits')
+    assert 'solar%20data' in s.now
+
+
+def test_local_path_with_spaces_and_percent_encoding(tmp_path):
+    path = tmp_path / 'path with spaces' / '2025' / '01' / '01'
+    path.mkdir(parents=True)
+    with (path / 'test.txt').open('w') as file:
+        file.write('')
+    s = Scraper(format='/'.join([tmp_path.as_uri(), 'path%20with%20spaces', '{{year:4d}}', '{{month:2d}}', '{{day:2d}}', '{{file}}']))
+    files = s.filelist(TimeRange('2025-01-01', '2025-01-02'))
+    assert len(files) == 1
+    assert 'path%20with%20spaces' in files[0]
