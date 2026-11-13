@@ -153,7 +153,7 @@ class MapFactory(BasicRegistrationFactory):
         else:
             return False
 
-    def _parse_args(self, *args, allow_errors=False, **kwargs):
+    def _parse_args(self, *args, allow_errors=False, progress=False, **kwargs):
         """
         Parses an args list into data-header pairs.
 
@@ -227,9 +227,15 @@ class MapFactory(BasicRegistrationFactory):
         # Parse the arguments
         # Note that this list can also contain GenericMaps if they are directly given to the factory
         data_header_pairs = []
-        for arg in parsed_args:
+        sub_progress = False if len(parsed_args) > 1 else progress
+        iterator = parsed_args
+        if progress and len(parsed_args) > 1:
+            from tqdm import tqdm
+
+            iterator = tqdm(parsed_args, desc="Reading files", unit="file")
+        for arg in iterator:
             try:
-                data_header_pairs += self._parse_arg(arg, allow_errors=allow_errors, **kwargs)
+                data_header_pairs += self._parse_arg(arg, allow_errors=allow_errors, progress=sub_progress, **kwargs)
             except NoMapsInFileError as e:
                 if not allow_errors:
                     raise
@@ -263,6 +269,7 @@ class MapFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(Request)
     def _parse_url(self, arg, **kwargs):
+        kwargs.pop("progress", None)
         url = arg.full_url
         path = str(cache.download(url).absolute())
         pairs = self._read_file(path, **kwargs)
@@ -270,15 +277,17 @@ class MapFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, arg, **kwargs):
-        return parse_path(arg, self._read_file, **kwargs)
+        progress = kwargs.pop("progress", False)
+        return parse_path(arg, self._read_file, progress=progress, **kwargs)
 
     @_parse_arg.register(fsspec.core.OpenFile)
     def _parse_fsspec_file(self, arg, **kwargs):
+        kwargs.pop("progress", None)
         # TODO: We should probably migrate the whole of the unified IO layer to
         # use fsspec for everything, but for now we parse the URI through
         return self._read_file(arg.full_name, **kwargs)
 
-    def __call__(self, *args, composite=False, sequence=False, allow_errors=False, **kwargs):
+    def __call__(self, *args, composite=False, sequence=False, allow_errors=False, progress=False, **kwargs):
         """Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
         to determine which is the correct Map-type to build.
@@ -298,13 +307,16 @@ class MapFactory(BasicRegistrationFactory):
         allow_errors : `bool`, optional
             If set, bypass data-header pairs or files which cause an exception and warn instead.
             Defaults to `False`.
+        progress : `bool`, optional
+            If `True`, display a progress bar when loading multiple files.
+            Defaults to `False`.
 
         Notes
         -----
         Extra keyword arguments are passed through to `sunpy.io._file_tools.read_file` such as
         ``memmap`` for FITS files.
         """
-        data_header_pairs = self._parse_args(*args, allow_errors=allow_errors, **kwargs)
+        data_header_pairs = self._parse_args(*args, allow_errors=allow_errors, progress=progress, **kwargs)
         new_maps = list()
 
         # Loop over each registered type and check to see if WidgetType

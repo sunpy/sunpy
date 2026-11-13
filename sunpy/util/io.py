@@ -26,7 +26,7 @@ def expand_fsspec_open_file(open_file):
     return [open_file]
 
 
-def parse_path(path, f, **kwargs):
+def parse_path(path, f, progress=False, **kwargs):
     """
     Read in a series of files at *path* using the function *f*.
 
@@ -35,6 +35,9 @@ def parse_path(path, f, **kwargs):
     path : pathlib.Path
     f : callable
         Must return a list of read-in data.
+    progress : `bool`, optional
+        If `True`, display a progress bar when reading multiple files.
+        Defaults to `False`.
     kwargs :
         Additional keyword arguments are handed to ``f``.
 
@@ -50,13 +53,20 @@ def parse_path(path, f, **kwargs):
         return f(path, **kwargs)
     elif is_dir(path):
         read_files = []
-        for afile in sorted(path.glob("*")):
+        files = sorted(path.glob("*"))
+        if progress and len(files) > 1:
+            from tqdm import tqdm
+            files = tqdm(files, desc="Reading files", unit="file")
+        for afile in files:
             read_files += f(afile, **kwargs)
         return read_files
     elif glob.glob(str(path)):
         read_files = []
-        for afile in sorted(glob.glob(str(path))):
-            afile = pathlib.Path(afile)
+        files = [pathlib.Path(afile) for afile in sorted(glob.glob(str(path)))]
+        if progress and len(files) > 1:
+            from tqdm import tqdm
+            files = tqdm(files, desc="Reading files", unit="file")
+        for afile in files:
             read_files += f(afile, **kwargs)
         return read_files
     else:

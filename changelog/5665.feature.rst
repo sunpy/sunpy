@@ -1,0 +1,1 @@
+Added ``progress`` keyword argument to `~sunpy.map.Map` and `~sunpy.timeseries.TimeSeries` to display a progress bar when loading multiple files.

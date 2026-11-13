@@ -307,7 +307,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 parsed_args.append(arg)
         return parsed_args
 
-    def _parse_args(self, *args, **kwargs):
+    def _parse_args(self, *args, progress=False, **kwargs):
         """
         Parses an `args` list for data-header pairs. `args` can contain any mixture of the following
         entries:
@@ -334,9 +334,15 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         args = self._sanitise_args(args, **kwargs)
         all_ts = []
-        for arg in args:
+        sub_progress = False if len(args) > 1 else progress
+        iterator = args
+        if progress and len(args) > 1:
+            from tqdm import tqdm
+
+            iterator = tqdm(args, desc="Reading files", unit="file")
+        for arg in iterator:
             try:
-                all_ts += self._parse_arg(arg, **kwargs)
+                all_ts += self._parse_arg(arg, progress=sub_progress, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError) as e:
                 msg = f"One of the files failed to validate with: {e}"
                 if self.allow_errors:
@@ -410,7 +416,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(pathlib.Path)
     def _parse_path(self, path, **kwargs):
-        results = parse_path(path, self._read_file, **kwargs)
+        progress = kwargs.pop("progress", False)
+        results = parse_path(path, self._read_file, progress=progress, **kwargs)
         all_ts = []
         for r in results:
             all_ts += self._parse_ts_results(r, **kwargs)
@@ -428,11 +435,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     @_parse_arg.register(fsspec.core.OpenFile)
     def _parse_fsspec_file(self, arg, **kwargs):
+        kwargs.pop("progress", None)
         # TODO: We should probably migrate the whole of the unified IO layer to
         # use fsspec for everything, but for now we parse the URI through
         return self._read_file(arg.full_name, **kwargs)
 
-    def __call__(self, *args, allow_errors=False, **kwargs):
+    def __call__(self, *args, allow_errors=False, progress=False, **kwargs):
         """
         Method for running the factory. Takes arbitrary arguments and keyword
         arguments and passes them to a sequence of pre-registered types to
@@ -447,13 +455,16 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         allow_errors : `bool`, optional
             If set, bypass data-header pairs or files which cause an exception and warn instead.
             Defaults to `False`.
+        progress : `bool`, optional
+            If `True`, display a progress bar when loading multiple files.
+            Defaults to `False`.
 
         Notes
         -----
         Extra keyword arguments are passed through to `sunpy.io.read_file` such as `memmap` for FITS files.
         """
         self.allow_errors = allow_errors
-        new_timeseries = self._parse_args(*args, **kwargs)
+        new_timeseries = self._parse_args(*args, progress=progress, **kwargs)
 
         # Concatenate the timeseries into one if specified.
         concatenate = kwargs.get("concatenate", False)

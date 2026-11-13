@@ -417,3 +417,22 @@ def test_eitmap_does_not_match_level1_header_regression():
     # Before fix (old precedence): this incorrectly returned True
     # After fix: must be False so EITL1Map can claim it
     assert sunpy.map.sources.EITMap.is_datasource_for(None, header) is False
+
+
+def test_map_progress_bar(mocker):
+    mock_tqdm = mocker.patch("tqdm.tqdm", side_effect=lambda iterable, *args, **kwargs: iterable)
+    files = [AIA_171_IMAGE, RHESSI_IMAGE]
+
+    sunpy.map.Map(files, progress=False)
+    assert not mock_tqdm.called
+
+    sunpy.map.Map(files, progress=True)
+    assert mock_tqdm.called
+
+    mock_tqdm.reset_mock()
+    sunpy.map.Map(rootdir / "EIT", progress=True)
+    assert mock_tqdm.called
+
+    mock_tqdm.reset_mock()
+    sunpy.map.Map(AIA_171_IMAGE, progress=True)
+    assert not mock_tqdm.called
