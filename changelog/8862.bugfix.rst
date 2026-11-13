@@ -1,0 +1,1 @@
+Fix an ``UnboundLocalError`` when ``Cache.download()`` is called with an empty list of URLs.
