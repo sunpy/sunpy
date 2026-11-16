@@ -11,6 +11,8 @@ including all the sources implemented in `~sunpy.net.dataretriever` as well as
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Instrument.lyra)  # doctest: +REMOTE_DATA
     >>> files = Fido.fetch(results)  # doctest: +SKIP
 
+For an overview and comparison of all the data-download clients supported by ``Fido``, see :ref:`sunpy-tutorial-acquiring-data-clients`.
+
 .. automodapi:: sunpy.net
    :include-all-objects:
    :headings: =-
