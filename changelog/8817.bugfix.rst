@@ -1,0 +1,1 @@
+Fixed ``a.soar.SOOP`` searches in `~sunpy.net.soar.SOARClient` so that they also return data items taken during overlapping SOOPs. The SOAR lists all of the SOOP names for these data items in one field separated by semicolons, and before this fix they were only returned by an exact match of that whole field.
