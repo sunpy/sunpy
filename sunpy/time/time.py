@@ -257,8 +257,21 @@ def convert_time_str(time_string, **kwargs):
                     if add_one_day:
                         t += _ONE_DAY_TIMEDELTA
                 else:
-                    # For a list of strings, we do not try to correct 24:00:00
-                    t = Time.strptime(time_string, time_format, **kwargs)
+                    parsed = []
+                    add_days = []
+                    valid = True
+                    for item in time_string:
+                        ts_i, add_i = _regex_parse_time(item, time_format)
+                        if ts_i is None:
+                            valid = False
+                            break
+                        parsed.append(ts_i)
+                        add_days.append(bool(add_i))
+                    if not valid:
+                        continue
+                    t = Time.strptime(parsed, time_format, **kwargs)
+                    if any(add_days):
+                        t += TimeDelta(np.asarray(add_days, dtype=int) * u.day)
                 return t
             except ValueError:
                 pass
