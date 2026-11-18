@@ -19,6 +19,7 @@ from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.time import Time
 from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
 
@@ -234,6 +235,51 @@ def test_wcs_error_not_cached(aia171_test_map):
     # Try again and fail again to recalculate the property
     with pytest.raises(InconsistentAxisTypesError):
         _ = aia171_test_map.wcs
+
+def test_wcs_precision(aia171_test_map):
+    # Values with more significant digits than to_header() writes out. Round-tripping
+    # through a FITS header gives relative errors of ~1e-14, whereas building the WCS
+    # directly as accurate as possible.
+    aia171_test_map.meta['crpix1'] = 64.123456789012345
+    aia171_test_map.meta['crpix2'] = 63.987654321098765
+    aia171_test_map.meta['cdelt1'] = 2.40000123456789012
+    aia171_test_map.meta['cdelt2'] = 2.39999987654321098
+    aia171_test_map.meta['crval1'] = 0.123456789012345678
+    aia171_test_map.meta['crval2'] = -0.987654321098765432
+    wcs = aia171_test_map.wcs
+
+    np.testing.assert_allclose(wcs.wcs.crpix,
+                               [aia171_test_map.meta['crpix1'], aia171_test_map.meta['crpix2']],
+                               rtol=1e-15, atol=0)
+    np.testing.assert_allclose(u.Quantity(wcs.wcs.cdelt, wcs.wcs.cunit[0]).to_value(u.arcsec),
+                               [aia171_test_map.meta['cdelt1'], aia171_test_map.meta['cdelt2']],
+                               rtol=1e-15, atol=0)
+    np.testing.assert_allclose(u.Quantity(wcs.wcs.crval, wcs.wcs.cunit[0]).to_value(u.arcsec),
+                               [aia171_test_map.meta['crval1'], aia171_test_map.meta['crval2']],
+                               rtol=1e-15, atol=0)
+
+
+def test_wcs_mjd_set(aia171_test_map):
+    # MJD-* used to be populated implicitly by to_header()
+    aia171_test_map.meta['date-beg'] = '2011-02-15T00:00:00.000'
+    aia171_test_map.meta['date-end'] = '2011-02-15T00:00:01.000'
+    wcs = aia171_test_map.wcs
+    assert wcs.wcs.mjdobs == aia171_test_map.date.utc.mjd
+    assert wcs.wcs.mjdavg == aia171_test_map.reference_date.utc.mjd
+    assert wcs.wcs.mjdbeg == Time('2011-02-15T00:00:00.000').mjd
+    assert wcs.wcs.mjdend == Time('2011-02-15T00:00:01.000').mjd
+
+
+def test_wcs_aux_single_observer(aia171_test_map):
+    # A map with both Stonyhurst and Carrington observer keywords should only
+    # have the aux keywords for the frame of the observer coordinate
+    aia171_test_map.meta['crln_obs'] = 123.
+    wcs = aia171_test_map.wcs
+    assert wcs.wcs.aux.hgln_obs == aia171_test_map.observer_coordinate.lon.to_value(u.deg)
+    assert wcs.wcs.aux.crln_obs is None
+    assert wcs.wcs.aux.hglt_obs == aia171_test_map.observer_coordinate.lat.to_value(u.deg)
+    assert wcs.wcs.aux.dsun_obs == aia171_test_map.observer_coordinate.radius.to_value(u.m)
+    assert wcs.wcs.aux.rsun_ref == aia171_test_map.rsun_meters.to_value(u.m)
 
 
 def test_obs_coord_cache(aia171_test_map):
