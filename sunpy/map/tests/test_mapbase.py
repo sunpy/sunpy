@@ -153,6 +153,46 @@ def test_wcs_sip(aia171_test_map):
     np.testing.assert_allclose(reprojected_map.wcs.sip.b, sip_wcs.sip.b)
 
 
+def test_wcs_sip_keycomments():
+    # SunPy's FITS reader stores KEYCOMMENTS as a dict. Accessing .wcs for a
+    # SIP map must not pass that value to astropy.wcs.WCS (see #8918).
+    header = {
+        "naxis": 2,
+        "naxis1": 10,
+        "naxis2": 10,
+        "ctype1": "HPLN-TAN-SIP",
+        "ctype2": "HPLT-TAN-SIP",
+        "cunit1": "deg",
+        "cunit2": "deg",
+        "crval1": 0.0,
+        "crval2": 0.0,
+        "crpix1": 5.0,
+        "crpix2": 5.0,
+        "cdelt1": 1.0,
+        "cdelt2": 1.0,
+        "date-obs": "2026-11-17T00:00:00",
+        "hgln_obs": 0.0,
+        "hglt_obs": 0.0,
+        "dsun_obs": 1.5e11,
+        "a_order": 2,
+        "b_order": 2,
+        "a_2_0": 1e-7,
+        "b_0_2": -1e-7,
+        "keycomments": {
+            "SIMPLE": "conforms to FITS standard",
+            "BITPIX": "array data type",
+            "NAXIS": "number of array dimensions",
+        },
+    }
+    sip_map = sunpy.map.Map(np.ones((10, 10)), header)
+    assert "KEYCOMMENTS" in sip_map.meta
+    sip_wcs = sip_map.wcs
+    assert sip_wcs.sip is not None
+    np.testing.assert_allclose(sip_wcs.sip.a[2, 0], 1e-7)
+    np.testing.assert_allclose(sip_wcs.sip.b[0, 2], -1e-7)
+    assert "KEYCOMMENTS" in sip_map.meta
+
+
 def test_wcs_cache(aia171_test_map):
     aia171_test_map = deepcopy(aia171_test_map)  # for thread safety
 

@@ -660,7 +660,12 @@ class GenericMap(MapMetaMixin, NDData):
 
         # Unlike Astropy we only use SIP distortions if it is in the CTYPE.
         if any(t.endswith("-SIP") for t in self.coordinate_system):
-            sip_wcs = astropy.wcs.WCS(header=self.meta)
+            # SunPy's FITS reader stores KEYCOMMENTS as a dict in meta. Astropy
+            # WCS cannot ingest that non-FITS value, so drop it from a copy.
+            header = self.meta.copy()
+            header.pop("KEYCOMMENTS", None)
+            # We only need SIP coefficients; skip header fixes that emit warnings.
+            sip_wcs = astropy.wcs.WCS(header=header, fix=False)
             w2.sip = sip_wcs.sip
 
         # Validate the WCS here.

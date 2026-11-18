@@ -1,0 +1,1 @@
+Fixed a `ValueError` when accessing `.wcs` on a `~sunpy.map.GenericMap` with SIP-distorted CTYPE values, caused by passing SunPy's ``KEYCOMMENTS`` metadata to Astropy.
