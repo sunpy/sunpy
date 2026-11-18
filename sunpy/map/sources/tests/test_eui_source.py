@@ -86,6 +86,9 @@ def test_crota_without_pc(eui_map, angle, scale):
     header['CROTA'] = angle
     header['CDELT1'], header['CDELT2'] = scale
     smap = EUIMap(eui_map.data, header)
+    np.testing.assert_allclose(smap.rotation_matrix,
+                               EUIMap._pc_matrix(scale[1] / scale[0], np.deg2rad(angle)),
+                               rtol=0, atol=1.e-12)
 
     # Astropy uses the standard CROTA2 keyword for this legacy convention.
     expected_header = smap.fits_header
