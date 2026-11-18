@@ -660,7 +660,7 @@ class GenericMap(MapMetaMixin, NDData):
 
         # Unlike Astropy we only use SIP distortions if it is in the CTYPE.
         if any(t.endswith("-SIP") for t in self.coordinate_system):
-            sip_wcs = astropy.wcs.WCS(header=self.meta)
+            sip_wcs = astropy.wcs.WCS(header=self.fits_header)
             w2.sip = sip_wcs.sip
 
         # Validate the WCS here.

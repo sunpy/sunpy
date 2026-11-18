@@ -153,6 +153,39 @@ def test_wcs_sip(aia171_test_map):
     np.testing.assert_allclose(reprojected_map.wcs.sip.b, sip_wcs.sip.b)
 
 
+def test_wcs_sip_from_fits(tmp_path):
+    header = fits.Header({
+        'CTYPE1': 'HPLN-TAN-SIP',
+        'CTYPE2': 'HPLT-TAN-SIP',
+        'CUNIT1': 'deg',
+        'CUNIT2': 'deg',
+        'CRPIX1': 5,
+        'CRPIX2': 5,
+        'CDELT1': 1,
+        'CDELT2': 1,
+        'A_ORDER': 2,
+        'B_ORDER': 2,
+        'A_2_0': 1e-7,
+        'B_0_2': -1e-7,
+        'DATE-OBS': '2026-01-01T00:00:00',
+        'MJD-OBS': 61041.0,
+        'HGLN_OBS': 0,
+        'HGLT_OBS': 0,
+        'DSUN_OBS': 1.5e11,
+    })
+    header.add_history('First calibration step')
+    header.add_history('Second calibration step')
+    path = tmp_path / 'sip.fits'
+    fits.writeto(path, np.zeros((10, 10), dtype=np.int16), header)
+
+    sip_map = sunpy.map.Map(path)
+    sip = sip_map.wcs.sip
+    assert sip.a[2, 0] == 1e-7
+    assert sip.b[0, 2] == -1e-7
+    assert 'SIMPLE' in sip_map.meta['KEYCOMMENTS']
+    assert sip_map.meta['HISTORY'] == 'First calibration step\nSecond calibration step'
+
+
 def test_wcs_cache(aia171_test_map):
     aia171_test_map = deepcopy(aia171_test_map)  # for thread safety
 
