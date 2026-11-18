@@ -28,10 +28,12 @@ try:
 except ImportError:
     DASK_INSTALLED = False
 
+import astropy
 import astropy.units as u
 import astropy.wcs
 from astropy.coordinates import BaseCoordinateFrame, Longitude, SkyCoord, UnitSphericalRepresentation
 from astropy.nddata import NDData
+from astropy.utils.introspection import minversion
 from astropy.utils.metadata import MetaData
 from astropy.visualization import HistEqStretch, ImageNormalize
 from astropy.visualization.wcsaxes import Quadrangle, WCSAxes
@@ -661,7 +663,10 @@ class GenericMap(NDData):
         # Set observer coordinate information except when we know it is not appropriate (e.g., HGS)
         sunpy_frame = sunpy.coordinates.wcs_utils._sunpy_frame_class_from_ctypes(w2.wcs.ctype)
         if sunpy_frame is None or hasattr(sunpy_frame, 'observer'):
-            w2.wcs.set() # can remove once on astropy>=8.0.2
+            if not minversion(astropy, '8.0.2'):
+                # On astropy<8.0.2, wcs.wcs.aux is not writable in-place until
+                # set() has been called once to initialize it.
+                w2.wcs.set()
             obs_coord = self.observer_coordinate
             sunpy.coordinates.wcs_utils._set_wcs_aux_obs_coord(w2, obs_coord)
 
