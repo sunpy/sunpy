@@ -141,13 +141,17 @@ class GreatArc:
         # Vector from center to second point
         self.v2 = self.end_cartesian - self.center_cartesian
 
-        # The v3 vector lies in plane of v1 & v2 and is orthogonal to v1
-        self.v3 = np.cross(np.cross(self.v1, self.v2), self.v1)
-        self.v3 = self._r * self.v3 / np.linalg.norm(self.v3)
+        # The v3 vector lies in plane of v1 & v2 and is orthogonal to v1.
+        # Normalize v1 and v2 to unit vectors before computing the cross products
+        # to avoid floating-point overflow with float32 coordinates.
+        u1 = self.v1 / self._r
+        u2 = self.v2 / np.linalg.norm(self.v2)
+        u3 = np.cross(np.cross(u1, u2), u1)
+        self.v3 = self._r * u3 / np.linalg.norm(u3)
 
         # Inner angle between v1 and v2 in radians
-        self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
-                                      np.dot(self.v1, self.v2)) * u.rad
+        self.inner_angle = np.arctan2(np.linalg.norm(np.cross(u1, u2)),
+                                      np.dot(u1, u2)) * u.rad
 
         # Radius of the sphere
         self.radius = self._r * self.distance_unit
