@@ -1,9 +1,11 @@
 """Tests for EUI Solar Orbiter Map"""
 
+import numpy as np
 import pytest
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+from astropy.wcs import WCS
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import EUIMap
@@ -73,3 +75,24 @@ def test_norm_clip(eui_map):
 def test_wcs(eui_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     eui_map.wcs.pixel_to_world(0, 0)
+
+
+@pytest.mark.parametrize('angle', [0., 30., 90.])
+@pytest.mark.parametrize('scale', [(1., 1.), (2., 3.)])
+def test_crota_without_pc(eui_map, angle, scale):
+    header = eui_map.meta.copy()
+    for key in ('PC1_1', 'PC1_2', 'PC2_1', 'PC2_2'):
+        header.pop(key, None)
+    header['CROTA'] = angle
+    header['CDELT1'], header['CDELT2'] = scale
+    smap = EUIMap(eui_map.data, header)
+
+    # Astropy uses the standard CROTA2 keyword for this legacy convention.
+    expected_header = smap.fits_header
+    expected_header['CROTA2'] = expected_header.pop('CROTA')
+    expected = WCS(expected_header, fix=False)
+    np.testing.assert_allclose(smap.wcs.pixel_scale_matrix, expected.pixel_scale_matrix,
+                               rtol=0, atol=1.e-12)
+    x, y = np.meshgrid([0., 5.], [0., 5.])
+    np.testing.assert_allclose(smap.wcs.pixel_to_world_values(x, y),
+                               expected.pixel_to_world_values(x, y), rtol=0, atol=1.e-10)
