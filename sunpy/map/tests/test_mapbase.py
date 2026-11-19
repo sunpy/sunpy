@@ -153,6 +153,42 @@ def test_wcs_sip(aia171_test_map):
     np.testing.assert_allclose(reprojected_map.wcs.sip.b, sip_wcs.sip.b)
 
 
+
+@pytest.mark.parametrize('commentary', [False, True])
+def test_wcs_sip_from_fits(tmp_path, commentary):
+    header = fits.Header({
+        'CTYPE1': 'HPLN-TAN-SIP', 'CTYPE2': 'HPLT-TAN-SIP',
+        'CUNIT1': 'deg', 'CUNIT2': 'deg',
+        'CRVAL1': 0., 'CRVAL2': 0., 'CRPIX1': 5., 'CRPIX2': 5.,
+        'CDELT1': 0.01, 'CDELT2': 0.01,
+        'DATE-OBS': '2024-01-01T00:00:00',
+        'HGLN_OBS': 0., 'HGLT_OBS': 0., 'DSUN_OBS': 149597870700.,
+        'RSUN_REF': 695700000.,
+        'A_ORDER': 2, 'B_ORDER': 2, 'A_2_0': 1.e-3, 'B_0_2': -2.e-3,
+    })
+    header['CRPIX1'] = (5., 'Reference pixel')
+    if commentary:
+        header.add_comment('First comment')
+        header.add_comment('Second comment')
+        header.add_history('First history entry')
+        header.add_history('Second history entry')
+    data = np.arange(100, dtype=float).reshape(10, 10)
+    path = tmp_path / 'sip.fits'
+    fits.writeto(path, data, header)
+    smap = sunpy.map.Map(path)
+    original_meta = deepcopy(smap.meta)
+    assert smap.meta['keycomments']['CRPIX1'] == 'Reference pixel'
+
+    actual = smap.wcs
+    expected = astropy.wcs.WCS(header, fix=False)
+    x, y = np.meshgrid([0., 4., 9.], [0., 4., 9.])
+    np.testing.assert_allclose(actual.pixel_to_world_values(x, y),
+                               expected.pixel_to_world_values(x, y), rtol=0, atol=1.e-10)
+    np.testing.assert_array_equal(actual.sip.a, expected.sip.a)
+    np.testing.assert_array_equal(actual.sip.b, expected.sip.b)
+    np.testing.assert_array_equal(smap.data, data)
+    assert smap.meta == original_meta
+
 def test_wcs_cache(aia171_test_map):
     aia171_test_map = deepcopy(aia171_test_map)  # for thread safety
 
