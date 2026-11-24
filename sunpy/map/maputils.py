@@ -10,7 +10,9 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from astropy.visualization import AsymmetricPercentileInterval
 
-from sunpy.coordinates import Helioprojective, sun
+from sunpy.coordinates import Helioprojective
+from sunpy.coordinates.utils import solar_angular_radius as _coords_solar_angular_radius
+from sunpy.util.decorators import deprecated
 
 __all__ = ['all_pixel_indices_from_map', 'all_coordinates_from_map',
            'all_corner_coords_from_map',
@@ -140,6 +142,7 @@ def _verify_coordinate_helioprojective(coordinates):
                          "but must be in the Helioprojective frame.")
 
 
+@deprecated(since="8.1", alternative="sunpy.coordinates.utils.solar_angular_radius")
 def solar_angular_radius(coordinates):
     """
     Calculates the solar angular radius as seen by the observer.
@@ -160,8 +163,7 @@ def solar_angular_radius(coordinates):
     angle : `~astropy.units.Quantity`
         The solar angular radius.
     """
-    _verify_coordinate_helioprojective(coordinates)
-    return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
+    return _coords_solar_angular_radius(coordinates)
 
 
 def sample_at_coords(smap, coordinates):
@@ -284,7 +286,7 @@ def coordinate_is_on_solar_disk(coordinates):
     _verify_coordinate_helioprojective(coordinates)
     # Calculate the radial angle from the center of the Sun (do not assume small angles)
     # and compare it to the angular radius of the Sun
-    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= solar_angular_radius(coordinates)
+    return np.arccos(np.cos(coordinates.Tx) * np.cos(coordinates.Ty)) <= _coords_solar_angular_radius(coordinates)
 
 
 def is_all_off_disk(smap):

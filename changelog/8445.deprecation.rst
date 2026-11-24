@@ -1,0 +1,2 @@
+Moved :func:`~sunpy.map.solar_angular_radius` to :func:`sunpy.coordinates.utils.solar_angular_radius`.
+:func:`sunpy.map.solar_angular_radius` is now deprecated and will be removed in a future release.
