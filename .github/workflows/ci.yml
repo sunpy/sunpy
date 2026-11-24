@@ -174,7 +174,6 @@ jobs:
         - cp{312,313,314,315}-win_amd64
         - target: cp{312,313,314}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
-
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
       submodules: false
