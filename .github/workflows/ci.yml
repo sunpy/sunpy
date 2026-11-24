@@ -34,7 +34,11 @@ jobs:
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
+<<<<<<<
         - linux: py313-minimal
+=======
+        - linux: py314
+>>>>>>>
 
   sdist_verify:
     runs-on: ubuntu-latest
@@ -44,7 +48,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
         with:
-          python-version: '3.13'
+          python-version: '3.14'
       - run: python -m pip install -U --user build twine "validate-pyproject[all]"
       - run: validate-pyproject pyproject.toml
       - run: python -m build . --sdist
@@ -59,6 +63,7 @@ jobs:
       submodules: false
       coverage: codecov-oidc
       toxdeps: tox-pypi-filter
+<<<<<<<
       posargs: -n auto --color=yes
       libraries: |
         brew:
@@ -68,14 +73,25 @@ jobs:
       envs: |
         - linux: py314
         - windows: py313
+=======
+      posargs: -n auto
+      envs: |
+        - linux: py313
+        - linux: py315
+        - windows: py312
+>>>>>>>
         - macos: py313
         - linux: py312-oldestdeps
+<<<<<<<
+=======
+        - linux: py315-devdeps
+>>>>>>>
 
   docs:
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     with:
-      default_python: '3.13'
+      default_python: '3.14'
       submodules: false
       pytest: false
       toxdeps: tox-pypi-filter
@@ -95,7 +111,15 @@ jobs:
           posargs: -D html_theme_options.collapse_navigation=True
 
   online:
+<<<<<<<
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
+=======
+      toxdeps: tox-pypi-filter
+      coverage: codecov-oidc
+      envs: |
+
+  threading:
+>>>>>>>
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
@@ -153,8 +177,15 @@ jobs:
         - linux: py314t-devdeps-minimal
           name: py314t-devdeps (parallel threads)
           posargs: --parallel-threads=auto --color=yes
+<<<<<<<
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+=======
+      toxdeps: tox-pypi-filter
+      coverage: codecov-oidc
+      envs: |
+
+>>>>>>>
 
   build_dists:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
@@ -170,12 +201,19 @@ jobs:
     with:
       sdist: false  # Built with a universal wheel below
       targets: |
+<<<<<<<
         - cp3{12,13,14}-manylinux*_x86_64
         - cp3{12,13,14}-macosx_x86_64
         - cp3{12,13,14}-macosx_arm64
         - cp3{12,13,14}-win_amd64
         - target: cp3{12,13,14}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
+=======
+        - cp{312,313,314,315}-manylinux*_x86_64
+        - cp{312,313,314,315}-macosx_x86_64
+        - cp{312,313,314,315}-macosx_arm64
+        - cp{312,313,314,315}-win_amd64
+>>>>>>>
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
       submodules: false
