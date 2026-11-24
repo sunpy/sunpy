@@ -67,11 +67,10 @@ jobs:
           - libopenjp2-7
       envs: |
         - linux: py313
-        - linux: py315
+        - linux: py315-minimal-devdeps
         - windows: py312
         - macos: py313
         - linux: py312-oldestdeps
-        - linux: py315-devdeps
 
   docs:
     needs: [core]
