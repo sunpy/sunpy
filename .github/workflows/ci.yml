@@ -67,7 +67,11 @@ jobs:
           - libopenjp2-7
       envs: |
         - linux: py313
-        - linux: py315
+        - linux: py315-minimal
+          # No binary wheels for h5py yet, so build from source
+          libraries:
+            apt:
+              - libhdf5-dev
         - windows: py312
         - macos: py313
         - linux: py312-oldestdeps
