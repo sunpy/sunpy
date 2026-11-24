@@ -113,7 +113,7 @@ jobs:
             docs/generated/
             .tox/sample_data/
           cache-key: docs-${{ github.run_id }}
-          libraries: |
+          libraries:
             apt:
               - libopenjp2-7
               - graphviz
