@@ -631,7 +631,7 @@ class GenericMap(MapMetaMixin, NDCube):
 
         # Keep the celestial axes in the units of the metadata rather than letting
         # wcslib convert them to degrees. When they already are degrees there is
-        # nothing to preserve and cause a  segfaults if cdelt or crval are
+        # nothing to preserve and cause a segfault if cdelt or crval are
         # set after set() can remove after astropy 8.0.2 with astropy#20418
         preserve_units = any(unit is not None and unit != u.deg for unit in self.spatial_units)
         w2 = astropy.wcs.WCS(naxis=2, preserve_units=preserve_units)
