@@ -67,7 +67,11 @@ jobs:
           - libopenjp2-7
       envs: |
         - linux: py314
+<<<<<<<
         - windows: py313
+=======
+        - windows: py312
+>>>>>>>
         - macos: py313
         - linux: py312-oldestdeps
 
@@ -93,9 +97,17 @@ jobs:
           pytest: false
           # Speed up CI builds by not building full nav tree
           posargs: -D html_theme_options.collapse_navigation=True
+<<<<<<<
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
+=======
+      toxdeps: tox-pypi-filter
+      coverage: codecov-oidc
+      envs: |
+
+  threading:
+>>>>>>>
     needs: [core]
     uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
@@ -155,6 +167,13 @@ jobs:
           posargs: --parallel-threads=auto --color=yes
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+<<<<<<<
+=======
+      toxdeps: tox-pypi-filter
+      coverage: codecov-oidc
+      envs: |
+
+>>>>>>>
 
   build_dists:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
@@ -170,12 +189,22 @@ jobs:
     with:
       sdist: false  # Built with a universal wheel below
       targets: |
+<<<<<<<
         - cp3{12,13,14}-manylinux*_x86_64
         - cp3{12,13,14}-macosx_x86_64
         - cp3{12,13,14}-macosx_arm64
         - cp3{12,13,14}-win_amd64
         - target: cp3{12,13,14}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
+=======
+        - cp{312,313,314}-manylinux*_x86_64
+        - cp{312,313,314}-macosx_x86_64
+        - cp{312,313,314}-macosx_arm64
+        - cp{312,313,314}-win_amd64
+        - target: cp{312,313,314}-manylinux_aarch64
+          runs-on: ubuntu-24.04-arm
+        - cp{312,313,314}-pyodide_wasm32
+>>>>>>>
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
       submodules: false
