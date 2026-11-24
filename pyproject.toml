@@ -64,8 +64,7 @@ map = [
   "contourpy>=1.3.0",
   "matplotlib>=3.10.0",
   "mpl-animators>=1.2.0",
-  "ndcube>=2.4.3",
-  "reproject>=0.14.0",
+  "ndcube[reproject]>=2.4.3",
   "scipy>=1.14.1",
 ]
 opencv = ["opencv-python>=4.8.0.74,!=4.13.0.*"]
@@ -151,6 +150,7 @@ docs-gallery = [
   "exifread",
   "ndcube>=2.4.3",
   "dkist",
+  "reproject>=0.14.0",
 ]
 dev = ["sunpy[docs,tests]"]
 
