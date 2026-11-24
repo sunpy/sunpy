@@ -431,4 +431,3 @@ def test_solar_angular_radius():
 
     with pytest.raises(ValueError, match="must be in the Helioprojective frame"):
         solar_angular_radius(SkyCoord(0 * u.deg, 0 * u.deg, frame="icrs"))
-

@@ -575,4 +575,3 @@ def solar_angular_radius(coordinates):
     """
     _verify_coordinate_helioprojective(coordinates)
     return sun._angular_radius(coordinates.rsun, coordinates.observer.radius)
-
