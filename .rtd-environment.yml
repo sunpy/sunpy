@@ -2,12 +2,6 @@ name: rtd_sunpy
 channels:
   - conda-forge
 dependencies:
-<<<<<<<
-=======
-channels:
-  - conda-forge
-dependencies:
->>>>>>>
   - python=3.13
   - pip
   - openjpeg
