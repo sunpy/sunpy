@@ -268,19 +268,21 @@ def test_vso_hmi(client, tmpdir):
 
 
 def test_check_connection(mocker):
-    mocker.patch('sunpy.net.vso.vso.urlopen',
-                 side_effect=HTTPError('https://notathing.com/', 400, 'Bad Request', {}, None))
+    http_error = HTTPError('https://notathing.com/', 400, 'Bad Request', {}, None)
+    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=http_error)
     with pytest.warns(SunpyUserWarning,
                       match='Connection to https://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
         assert check_connection('https://notathing.com/') is False
+    http_error.close()
 
 
 def test_check_cgi_connection(mocker):
-    mocker.patch('sunpy.net.vso.vso.urlopen',
-                 side_effect=HTTPError('https://notathing.com/', 400, 'Bad Request', {}, None))
+    http_error = HTTPError('https://notathing.com/', 400, 'Bad Request', {}, None)
+    mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=http_error)
     with pytest.warns(SunpyUserWarning,
                       match='Connection to https://notathing.com/ failed with error HTTP Error 400: Bad Request.'):
         assert check_cgi_connection('https://notathing.com/') is False
+    http_error.close()
 
     mocker.patch('sunpy.net.vso.vso.urlopen', side_effect=URLError('https://notathing.com/', 400))
     with pytest.warns(

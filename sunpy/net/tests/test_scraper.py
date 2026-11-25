@@ -283,12 +283,14 @@ def test_http_404_error_debug_message(caplog):
             return ['https://test.com/']
         with patch('sunpy.net.scraper.urlopen') as mocked_urlopen:
             with patch.object(Scraper, 'range', patch_range):
-                mocked_urlopen.side_effect = HTTPError('https://example.com', 404, '', {}, None)
+                http_error = HTTPError('https://example.com', 404, '', {}, None)
+                mocked_urlopen.side_effect = http_error
                 time = TimeRange('2012/3/4', '2012/3/4 02:00')
                 pattern = "https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
                 scraper = Scraper(format=pattern)
                 scraper._httpfilelist(time)
                 assert "Directory https://test.com/ not found." in caplog.text
+                http_error.close()
 
 
 def test_check_timerange():
