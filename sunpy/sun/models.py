@@ -140,6 +140,11 @@ def differential_rotation(duration: u.s, latitude: u.deg, *, model='howard', fra
     1 microrad/s is approximately 4.95 deg/day.
     See also the comparisons in :cite:t:`beck_comparison_2000`.
 
+    The synodic return option uses the average orbital motion of Earth of
+    0.9856 deg/day, which can differ from the actual orbital motion by up to
+    0.034 deg/day.  For accurate differential-rotation calculations for an Earth
+    observer, use :func:`~sunpy.coordinates.propagate_with_solar_surface` or
+    `~sunpy.coordinates.RotatedSunFrame` instead.
     Examples
     --------
     .. minigallery:: sunpy.sun.models.differential_rotation

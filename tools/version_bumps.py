@@ -12,12 +12,10 @@ from packaging.version import Version
 @cache
 def get_package_releases(package):
     """Fetch all versions and their release dates for a package from PyPI"""
-    print(f"Querying pypi.org for {package} versions...", end="", flush=True)
     response = requests.get(
         f"https://pypi.org/simple/{package}",
         headers={"Accept": "application/vnd.pypi.simple.v1+json"},
     ).json()
-    print("OK")
     file_date = collections.defaultdict(list)
     for f in response["files"]:
         ver = f["filename"].split("-")[1]
@@ -148,14 +146,15 @@ def process_dependencies(package, threshold=timedelta(days=365*2)):
     for group, deps in requirements_dict.items():
         for package_name, req in deps.items():
             min_version = get_min_version(req)
+            is_old = True
             if min_version:
                 is_old = is_version_old(package_name, min_version, threshold=threshold)
-                result[group].append({
-                    'package': package_name,
-                    'version': min_version,
-                    'group': group,
-                    'is_old': is_old
-                })
+            result[group].append({
+                'package': package_name,
+                'version': min_version,
+                'group': group,
+                'is_old': is_old
+            })
     return result
 
 

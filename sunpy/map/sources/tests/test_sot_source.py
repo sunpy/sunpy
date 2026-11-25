@@ -1,7 +1,5 @@
 import pytest
 
-import astropy.units as u
-
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.hinode import SOTMap
@@ -89,4 +87,4 @@ def test_private_date_setters(sot_map):
 def test_wcs(sot_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='assuming Earth-based observer'):
-        sot_map.pixel_to_world(0*u.pix, 0*u.pix)
+        sot_map.wcs.pixel_to_world(0, 0)

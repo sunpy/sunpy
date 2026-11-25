@@ -142,7 +142,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         # For these NoRH files, the time series data is recorded in the primary
         # HDU
         data = hdulist[0].data
-
+        data = data.astype(data.dtype.newbyteorder('='))
         # No explicit time array in FITS file, so construct the time array from
         # the FITS header
         obs_start_time = parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])

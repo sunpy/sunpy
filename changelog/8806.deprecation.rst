@@ -1,0 +1,2 @@
+Deprecated `~sunpy.map.GenericMap.dimensions` in favour of the new `~sunpy.map.GenericMap.shape`.
+``shape`` is in (row, column) order and is a plain tuple, whereas ``dimensions`` is in (x, y) order and in pixel units, so indices need swapping when moving across.

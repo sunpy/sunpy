@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest import mock
 
 import pytest
 import responses
@@ -698,3 +699,42 @@ def test_add_join_no_instrument_table():
     assert "h2.detector" not in select
     assert "h2.wavelength" not in select
     assert "h2.dimension_index" not in select
+
+def test_custom_tap_endpoint():
+    # Verify default endpoint
+    client = SOARClient()
+    assert client.tap_endpoint == "http://soar.esac.esa.int/soar-sl-tap/tap"
+
+    # Verify custom endpoint override
+    custom_url = "http://custom.tap.server/tap"
+    custom_client = SOARClient(tap_endpoint=custom_url)
+    assert custom_client.tap_endpoint == custom_url
+
+
+def test_custom_tap_endpoint_search():
+    """Covers line 220 (_do_search using self.tap_endpoint)."""
+    custom_url = "http://custom.tap.server/tap"
+    client = SOARClient(tap_endpoint=custom_url)
+
+    mock_resp = mock.MagicMock()
+    mock_resp.json.return_value = {
+        "metadata": [
+            {"name": "instrument"},
+            {"name": "descriptor"},
+            {"name": "level"},
+            {"name": "begin_time"},
+            {"name": "end_time"},
+            {"name": "data_item_id"},
+            {"name": "filename"},
+            {"name": "filesize"},
+            {"name": "soop_name"}
+        ],
+        "data": []
+    }
+    mock_resp.status_code = 200
+
+    with mock.patch("sunpy.net.soar.client.requests.get", return_value=mock_resp) as mock_get:
+        client._do_search(["instrument='EUI'"])
+
+        assert mock_get.called
+        assert mock_get.call_args[0][0] == f"{custom_url}/sync"

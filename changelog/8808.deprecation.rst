@@ -1,0 +1,1 @@
+Deprecate ``GenericMap.pixel_to_world`` and ``GenericMap.world_to_pixel`` as the ``GenericMap.wcs.pixel_to_world`` and ``GenericMap.wcs.world_to_pixel`` have equivalent functionality. Note, however, that pixel units into and out of the ``.wcs`` methods do not have units.

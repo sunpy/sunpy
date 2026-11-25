@@ -2,7 +2,6 @@
 requires = [
   "setuptools>=62.1",
   "setuptools_scm[toml]>=8.0.1",
-  "wheel",
   "extension-helpers>=1.4,<2",
   "numpy>=2.0.0rc1",
 ]
@@ -15,6 +14,19 @@ requires-python = ">=3.12"
 readme = { file = "README.rst", content-type = "text/x-rst" }
 license-files = ["LICENSE.rst", "licenses/*.rst"]
 license = "BSD-3-Clause"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Physics",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
 authors = [
   { name = "The SunPy Community", email = "sunpy@googlegroups.com" },
 ]
@@ -30,19 +42,6 @@ dependencies = [
 ]
 dynamic = ["version"]
 keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
-classifiers = [
-  "Development Status :: 5 - Production/Stable",
-  "Intended Audience :: Science/Research",
-  "Natural Language :: English",
-  "Operating System :: OS Independent",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
-  "Programming Language :: Python :: 3.14",
-  "Topic :: Scientific/Engineering :: Physics",
-]
 
 [project.optional-dependencies]
 # The list of available extras is also in the installation docs,
@@ -186,6 +185,7 @@ sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
 
 [tool.cibuildwheel]
 environment-pass = ["EXTENSION_HELPERS_PY_LIMITED_API"]
+test-skip = "cp315*"  # h5py doesn't have binary wheels yet
 
 [tool.extension-helpers]
 use_extension_helpers = "true"
@@ -218,6 +218,20 @@ use_extension_helpers = "true"
   type_incorrect_long = "The changelog file you added is not one of the allowed types. Please use one of the types described in the changelog [README](https://github.com/sunpy/sunpy/blob/main/changelog/README.rst)"
 
   number_incorrect_long = "The number in the changelog file you added does not match the number of this pull request. Please rename the file."
+
+[tool.repo-review.ignore]
+PY003 = "The LICENSE file is in licenses/"
+PY005 = "The template packages tests inside sunpy/"
+PP006 = "We are not currently using dependency-groups"
+PP301 = "pytest config is in pytest.ini"
+PC110 = "ruff format not currently an option"
+PC140 = "No SunPy projects make heavy use of types"
+PC170 = "Not using pygrep"
+PC180 = "No markdown formatter required"
+PC901 = "Opt-out"
+PC902 = "Opt-out"
+MY = "No SunPy projects make heavy use of types"
+RF101 = "ruff extended linting option disabled, enable to use bugbear"
 
 # TODO: This should be in towncrier.toml but Giles currently only works looks in
 # pyproject.toml we should move this back when it's fixed.

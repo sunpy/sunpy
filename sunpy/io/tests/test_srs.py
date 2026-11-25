@@ -1,3 +1,6 @@
+import datetime
+from itertools import product
+
 import pytest
 
 import astropy.units as u
@@ -12,6 +15,7 @@ filenames = [
     {'file': 'SRS/20150306SRS.txt', 'rows': 4},
     {'file': 'SRS/20150101SRS.txt', 'rows': 9},
     {'file': 'SRS/20100621SRS.txt', 'rows': 3},  # This is a corrected copy
+    {'file': 'SRS/20100929SRS.txt', 'rows': 3},  # Empty sections IA and II
     # Uppercase files
     {'file': 'SRS/19960106SRS.txt', 'rows': 4},  # inc. spurious `NNN` on final line
     {'file': 'SRS/19960430SRS.txt', 'rows': 1},
@@ -44,6 +48,41 @@ LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name=
 def test_number_of_rows(path, number_of_rows):
     table = srs.read_srs(path)
     assert len(table) == number_of_rows
+
+
+@pytest.mark.parametrize('empty_sections', list(product([False, True], repeat=3)))
+@pytest.mark.parametrize('uppercase', [False, True])
+def test_empty_sections(tmp_path, empty_sections, uppercase):
+    with open(get_test_filepath('SRS/20100621SRS.txt')) as srs_file:
+        lines = srs_file.readlines()
+    rows = ['1082 N27W05', '1083  N19W35', '1076 S19']
+    for i, row in enumerate(rows):
+        if empty_sections[i]:
+            lines = ['None\n' if line.startswith(row) else line for line in lines]
+    text = ''.join(lines)
+    path = tmp_path / 'SRS.txt'
+    path.write_text(text.upper() if uppercase else text)
+
+    table = srs.read_srs(path)
+
+    assert len(table) == sum(not empty for empty in empty_sections)
+    assert list(table['ID']) == [key for key, empty in zip(['I', 'IA', 'II'], empty_sections) if not empty]
+    assert list(table['Number']) == [number for number, empty in zip([11082, 11083, 11076], empty_sections) if not empty]
+    assert_quantity_allclose(table['Latitude'], [lat for lat, empty in zip([27, 19, -19], empty_sections) if not empty] * u.deg)
+    assert table['Longitude'].unit == u.deg
+    assert table['Carrington Longitude'].unit == u.deg
+    assert table.meta['issued'] == datetime.datetime(2010, 6, 21, 0, 45)
+    assert list(table.meta['id']) == ['I', 'IA', 'II']
+
+
+def test_20100929_srs():
+    table = srs.read_srs(get_test_filepath('SRS/20100929SRS.txt'))
+
+    assert list(table['ID']) == ['I', 'I', 'I']
+    assert list(table['Number']) == [11108, 11109, 11110]
+    assert_quantity_allclose(table['Latitude'], [-30, 22, 20] * u.deg)
+    assert_quantity_allclose(table['Longitude'], [83, 11, 31] * u.deg)
+    assert table.meta['issued'] == datetime.datetime(2010, 9, 29, 0, 30)
 
 
 @pytest.mark.parametrize(('text', 'longitude'),

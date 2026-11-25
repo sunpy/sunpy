@@ -3,8 +3,6 @@ Test cases for SUITMap subclass.
 """
 import pytest
 
-import astropy.units as u
-
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.suit import SUITMap
 from .helpers import _test_private_date_setters
@@ -54,7 +52,7 @@ def test_norm_clip(suit_map):
 
 def test_wcs(suit_map):
     """Test WCS is valid and can transform from pixels to world coordinates"""
-    suit_map.pixel_to_world(0*u.pix, 0*u.pix)
+    suit_map.wcs.pixel_to_world(0, 0)
 
 def test_private_date_setters(suit_map):
     _test_private_date_setters(suit_map)

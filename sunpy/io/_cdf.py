@@ -67,6 +67,9 @@ def read_cdf(fname, **kwargs):
         except ValueError:
             # Empty index for cdflib >= 0.3.20
             continue
+        # cdflib >= 1.3.13 no longer raises and error but returns a empty array
+        if index.size == 0:
+            continue
         # TODO: use to_astropy_time() instead here when we drop pandas in timeseries
         index = CDFepoch.to_datetime(index)
         df_dict = {}

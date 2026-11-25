@@ -10,6 +10,7 @@ count the approximate number of regions of interest using ndimage.
 # sphinx_gallery_thumbnail_number = 2
 
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy import ndimage
 
 import sunpy.map
@@ -27,7 +28,7 @@ aiamap = sunpy.map.Map(AIA_193_IMAGE)
 # value. Pixels with intensity values greater than this are included in the
 # mask, while all other pixels are excluded.
 
-mask = aiamap.data < aiamap.max() * 0.10
+mask = aiamap.data < np.nanmax(aiamap.data) * 0.10
 
 ##############################################################################
 # Mask is a `bool` array. It can be used to modify the original map object

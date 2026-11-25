@@ -26,7 +26,7 @@ jobs:
   cron:
     # Run on all triggers other than pull_request unless there's a label
     if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884 # v3.2.2
     with:
       default_python: '3.12'
       submodules: false
@@ -34,12 +34,12 @@ jobs:
       toxdeps: tox-pypi-filter
       envs: |
         - linux: py313-minimal-noana
-        - linux: py314-devdeps-reportlog
+        - linux: py315-devdeps-reportlog
           libraries:
             apt:
               - libopenjp2-7
           artifact-path: |
-            .tmp/py314-devdeps-reportlog/pytest-log.jsonl
+            .tmp/py315-devdeps-reportlog/pytest-log.jsonl
 
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -51,14 +51,14 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: py314-devdeps-reportlog-(ubuntu-latest)
+          name: py315-devdeps-reportlog-(ubuntu-latest)
           path: pytest-log
 
       - run: ls -lha pytest-log/
 
-      - uses: scientific-python/issue-from-pytest-log-action@054799b34bd75a5fd6c86277a4a8a575224e60c6 # v1.6.1
+      - uses: scientific-python/issue-from-pytest-log-action@35b4e0a9e06f8e7e261778289cf4b968b722662d # v1.6.2
         with:
           log-path: pytest-log/pytest-log.jsonl
           issue-title: "Cron devdeps build failure"
@@ -67,7 +67,7 @@ jobs:
   cron-online:
     # Run on all triggers other than pull_request unless there's a label
     if: (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'Run cron CI'))
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1 # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884 # v3.2.2
     with:
       default_python: '3.12'
       submodules: false
@@ -79,7 +79,7 @@ jobs:
       envs: |
         - linux: linkcheck
           pytest: false
-        - windows: py314-devdeps-online
+        - windows: py315-devdeps-online
           posargs: -m "remote_data"
 
     secrets:
@@ -95,7 +95,7 @@ jobs:
           lfs: true
           persist-credentials: false
 
-      - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+      - uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb # v4.1.0
         with:
           activate-environment: sunpy-test
           environment-file: sunpy-dev-env.yml
@@ -113,7 +113,7 @@ jobs:
           conda list
           cd /tmp
           pytest -vvv -r a --pyargs sunpy --cov-report=xml --cov=sunpy --cov-config=$GITHUB_WORKSPACE/pyproject.toml $GITHUB_WORKSPACE/docs -n auto --color=yes
-      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}  # zizmor: ignore[secrets-outside-env]
           files: ./coverage.xml
@@ -125,7 +125,7 @@ jobs:
     environment:
       name: matrix
     steps:
-      - uses: Cadair/matrix-notify-action@31c7cc36051ee7dc4157a22c1f13dbc7d68e5120 # v2
+      - uses: Cadair/matrix-notify-action@9f46790e6ae0a5a83bd63ae0a3bb1948f2bc784c # v3
         with:
           workflow_description: "Cron Workflow"
           matrix_token: '${{ secrets.MATRIX_ACCESS_TOKEN }}'

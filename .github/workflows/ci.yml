@@ -24,7 +24,8 @@ permissions: {}
 
 jobs:
   core:
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    if: ${{ !github.event.repository.fork || github.event_name != 'schedule' }}
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
@@ -33,7 +34,7 @@ jobs:
       toxdeps: tox-pypi-filter
       posargs: -n auto --color=yes
       envs: |
-        - linux: py313-minimal
+        - linux: py314-minimal
 
   sdist_verify:
     runs-on: ubuntu-latest
@@ -41,17 +42,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
         with:
-          python-version: '3.13'
-      - run: python -m pip install -U --user build
+          python-version: '3.14'
+      - run: python -m pip install -U --user build twine "validate-pyproject[all]"
+      - run: validate-pyproject pyproject.toml
       - run: python -m build . --sdist
-      - run: python -m pip install -U --user twine
-      - run: python -m twine check dist/*
+      - run: python -m twine check --strict dist/*
 
   test:
     needs: [core, sdist_verify]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
@@ -65,16 +66,21 @@ jobs:
         apt:
           - libopenjp2-7
       envs: |
-        - linux: py314
-        - windows: py313
+        - linux: py313
+        - linux: py315
+          # No binary wheels for h5py yet, so build from source
+          libraries:
+            apt:
+              - libhdf5-dev
+        - windows: py312
         - macos: py313
         - linux: py312-oldestdeps
 
   docs:
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     with:
-      default_python: '3.13'
+      default_python: '3.14'
       submodules: false
       pytest: false
       toxdeps: tox-pypi-filter
@@ -95,8 +101,8 @@ jobs:
 
   online:
     if: "!startsWith(github.event.ref, 'refs/tags/v')"
-    needs: [docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    needs: [core, docs]
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
@@ -128,7 +134,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run cron CI')
       )
     needs: [core]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/tox.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     permissions:
       id-token: write
     with:
@@ -152,8 +158,6 @@ jobs:
         - linux: py314t-devdeps-minimal
           name: py314t-devdeps (parallel threads)
           posargs: --parallel-threads=auto --color=yes
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   build_dists:
     # Build wheels on PRs only when labelled. Releases will only be published if tagged ^v.*
@@ -165,15 +169,15 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     with:
       sdist: false  # Built with a universal wheel below
       targets: |
-        - cp3{12,13,14}-manylinux*_x86_64
-        - cp3{12,13,14}-macosx_x86_64
-        - cp3{12,13,14}-macosx_arm64
-        - cp3{12,13,14}-win_amd64
-        - target: cp3{12,13,14}-manylinux_aarch64
+        - cp{312,313,314,315}-manylinux*_x86_64
+        - cp{312,313,314,315}-macosx_x86_64
+        - cp{312,313,314,315}-macosx_arm64
+        - cp{312,313,314,315}-win_amd64
+        - target: cp{312,313,314,315}-manylinux_aarch64
           runs-on: ubuntu-24.04-arm
       test_extras: 'tests'
       test_command: 'pytest -p no:warnings --doctest-rst --pyargs sunpy'
@@ -197,7 +201,7 @@ jobs:
         contains(github.event.pull_request.labels.*.name, 'Run publish')
       )
     needs: [test, docs]
-    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@8c8bb6c6c962542921f993d47d26df38dccd50b1  # v3.0.2
+    uses: OpenAstronomy/github-actions-workflows/.github/workflows/publish_pure_python.yml@1285b95e32c783cfa40eb2ffbd6ca4cd023fb884  # v3.2.2
     with:
       python-version: "3.13"
       test_extras: 'tests'
@@ -219,7 +223,7 @@ jobs:
       name: pypi
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
         with:
           merge-multiple: true
           pattern: dist-*
@@ -228,7 +232,7 @@ jobs:
       - run: ls -lha dist/
 
       - name: Run upload
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3
 
   notify:
     if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule') }}
@@ -237,7 +241,7 @@ jobs:
     environment:
       name: matrix
     steps:
-      - uses: Cadair/matrix-notify-action@31c7cc36051ee7dc4157a22c1f13dbc7d68e5120  # v2
+      - uses: Cadair/matrix-notify-action@9f46790e6ae0a5a83bd63ae0a3bb1948f2bc784c  # v3
         with:
           workflow_description: 'CI Workflow'
           matrix_token: ${{ secrets.MATRIX_ACCESS_TOKEN }}

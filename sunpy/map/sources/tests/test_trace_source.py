@@ -1,7 +1,5 @@
 import pytest
 
-import astropy.units as u
-
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.trace import TRACEMap
@@ -60,4 +58,4 @@ def test_norm_clip(trace_map):
 def test_wcs(trace_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        trace_map.pixel_to_world(0*u.pix, 0*u.pix)
+        trace_map.wcs.pixel_to_world(0, 0)

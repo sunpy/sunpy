@@ -131,7 +131,7 @@ class ESPTimeSeries(GenericTimeSeries):
         all_data = [hdulist[1].data[x] for x in colnames]
         data = DataFrame(np.array(all_data).T, index=times.isot.astype(
             'datetime64'), columns=colnames)
-        data.sort_index(inplace=True)
+        data = data.sort_index()
 
         units = OrderedDict([('QD', u.W/u.m**2),
                              ('CH_18', u.W/u.m**2),
