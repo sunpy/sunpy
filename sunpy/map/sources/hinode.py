@@ -171,7 +171,7 @@ class SOTMap(GenericMap):
     """
     _instruments = [
         'SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT'
-        ]
+    ]
     _waves = [
         '6302A', 'BFI no move', 'CN bandhead 3883',
         'Ca II H line', 'G band 4305', 'NFI no move',
