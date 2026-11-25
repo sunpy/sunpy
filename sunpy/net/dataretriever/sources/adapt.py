@@ -1,6 +1,5 @@
 
 from sunpy.net import attrs as a
-from sunpy.net.dataretriever import GenericClient
 from sunpy.net.dataretriever.attrs.adapt import (
     ADAPTDataAssimilation,
     ADAPTEvolutionMode,
@@ -14,6 +13,7 @@ from sunpy.net.dataretriever.attrs.adapt import (
     ADAPTVersionMonth,
     ADAPTVersionYear,
 )
+from sunpy.net.dataretriever.client import GenericClient
 
 __all__ = ['ADAPTClient']
 

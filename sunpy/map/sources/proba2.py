@@ -1,5 +1,5 @@
 """PROBA2 Map subclass definitions"""
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap
 
 __all__ = ['SWAPMap']
 

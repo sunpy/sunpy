@@ -1,7 +1,5 @@
 """
 SunPy Map
-
-isort:skip_file
 """
 # Check if user has installed the map extras
 from sunpy.util.sysinfo import _warn_missing_deps

@@ -5,7 +5,7 @@
 import astropy.units as u
 
 from sunpy.net import attrs as a
-from sunpy.net.dataretriever import GenericClient
+from sunpy.net.dataretriever.client import GenericClient
 
 __all__ = ['NoRHClient']
 
