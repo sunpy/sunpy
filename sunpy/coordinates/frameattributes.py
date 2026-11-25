@@ -8,8 +8,8 @@ from astropy.time import Time
 from sunpy.time import parse_time
 
 try:
-    from astropy.coordinates import impose_frame_attributes
-    _AssumedAttributeMixin = object()
+    from astropy.coordinates import Attribute, impose_frame_attributes
+    class _AssumedAttributeMixin(Attribute): pass  # noqa E701
 except ImportError:
     from ._impose_attribute_backport import _AssumedAttributeMixin, impose_frame_attributes
 
