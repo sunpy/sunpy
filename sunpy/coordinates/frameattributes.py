@@ -1,4 +1,5 @@
 import datetime
+from contextlib import contextmanager
 
 import astropy.units as u
 from astropy.coordinates import BaseCoordinateFrame, CoordinateAttribute, SkyCoord, TimeAttribute
@@ -6,10 +7,56 @@ from astropy.time import Time
 
 from sunpy.time import parse_time
 
-__all__ = ['TimeFrameAttributeSunPy', 'ObserverCoordinateAttribute']
+try:
+    from astropy.coordinates import impose_frame_attributes
+    _AssumedAttributeMixin = object()
+except ImportError:
+    from ._impose_attribute_backport import _AssumedAttributeMixin, impose_frame_attributes
 
 
-class TimeFrameAttributeSunPy(TimeAttribute):
+__all__ = ["impose_observer", "TimeFrameAttributeSunPy", "ObserverCoordinateAttribute"]
+
+
+@contextmanager
+def impose_observer(observer):
+    """
+    Impose the provided observer and its obstime on all frames with an observer attribute.
+
+    Parameters
+    ----------
+    observer : `~astropy.coordinates.SkyCoord`
+        The observer to impose, should have an obstime which will also be imposed.
+
+    Examples
+    --------
+    >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
+    >>> from sunpy.coordinates import Helioprojective
+    >>> import astropy.units as u
+    >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km,
+    ...               obstime="2010/01/01T00:00:00", observer="earth", frame="helioprojective")
+    >>> sc
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'earth'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (0., 0., 5.)>
+
+    This transformation does an observer shift and round trip through Heliographic coordinates:
+
+    >>> target_frame = Helioprojective(observer="mars", obstime=sc.obstime)
+    >>> sc.transform_to(target_frame)
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'mars'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (-79535.05476998, -424.5843386, 1.105226e+08)>
+
+    This transformation does not, because the observer of the input and output coordinates are the same, so in this case the transform does nothing.
+
+    >>> with impose_observer(target_frame.observer):
+    ...     sc.transform_to(Helioprojective(obstime="2010/01/02T00:00:00"))
+    <SkyCoord (Helioprojective: obstime=2010-01-01T00:00:00.000, rsun=695700.0 km, observer=<HeliographicStonyhurst Coordinate for 'mars'>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+        (0., 0., 5.)>
+    """
+    with impose_frame_attributes(observer=observer, obstime=observer.obstime):
+        yield
+
+class TimeFrameAttributeSunPy(_AssumedAttributeMixin, TimeAttribute):
     """
     Frame attribute descriptor for quantities that are Time objects.
     See the `~astropy.coordinates.Attribute` API doc for further
@@ -76,7 +123,7 @@ class TimeFrameAttributeSunPy(TimeAttribute):
         return out, converted
 
 
-class ObserverCoordinateAttribute(CoordinateAttribute):
+class ObserverCoordinateAttribute(_AssumedAttributeMixin, CoordinateAttribute):
     """
     An Attribute to describe the location of the observer in the solar system.
     The observer location can be given as a string of a known observer, which
