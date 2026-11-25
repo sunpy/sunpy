@@ -167,7 +167,9 @@ class LYRATimeSeries(GenericTimeSeries):
         table = {}
 
         for i, col in enumerate(fits_record.columns[1:-1]):
-            table[col.name] = fits_record.field(i + 1)
+            arr = fits_record.field(i + 1)
+            # pandas now requires a specific byte order
+            table[col.name] = arr.astype(arr.dtype.newbyteorder('='))
 
         # Return the header and the data
         times.precision = 9
