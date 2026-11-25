@@ -254,9 +254,10 @@ def test_yearly_overlap():
 )
 def test_http_errors_with_enqueue_limit(error_code, expected_number_calls, error_message):
     with patch("sunpy.net.scraper.urlopen") as mocked_urlopen:
-        mocked_urlopen.side_effect = HTTPError(
-            "https://example.com", error_code, error_message, {}, None
+        http_error = HTTPError(
+           "https://example.com", error_code, error_message, {}, None
         )
+        mocked_urlopen.side_effect = http_error
         time_range = TimeRange("2012/3/4", "2012/3/4 02:00")
         pattern = "https://proba2.sidc.be/lyra/data/bsd/{{year:4d}}/{{month:2d}}/{{day:2d}}/{{}}_lev{{Level:1d}}_std.fits"
         scraper = Scraper(format=pattern)
@@ -264,6 +265,7 @@ def test_http_errors_with_enqueue_limit(error_code, expected_number_calls, error
             scraper._httpfilelist(time_range)
         assert excinfo.value.code == error_code
         assert mocked_urlopen.call_count == expected_number_calls
+        http_error.close()
 
 
 def test_connection_error():

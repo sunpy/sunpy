@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/sunpy/package-template",
-  "commit": "68da9881c7acf97ec7eba19ddfca300efded6d3a",
+  "commit": "7cc247fd6e2dc3853f770c33eba712857363f14f",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -17,7 +17,7 @@
       "changelog_url": "https://docs.sunpy.org/en/stable/whatsnew/changelog.html",
       "issue_tracker_url": "https://github.com/sunpy/sunpy/issues",
       "license": "BSD 2-Clause",
-      "supported_python_versions": "3.12, 3.13, 3.14",
+      "supported_python_versions": "3.12, 3.13, 3.14, 3.15",
       "use_compiled_extensions": "y",
       "enable_dynamic_dev_versions": "y",
       "include_example_code": "n",
@@ -36,7 +36,7 @@
         ".github/workflows/zizmor.yml"
       ],
       "_template": "https://github.com/sunpy/package-template",
-      "_commit": "68da9881c7acf97ec7eba19ddfca300efded6d3a"
+      "_commit": "7cc247fd6e2dc3853f770c33eba712857363f14f"
     }
   },
   "directory": null

@@ -23,6 +23,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
@@ -184,6 +185,7 @@ sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
 
 [tool.cibuildwheel]
 environment-pass = ["EXTENSION_HELPERS_PY_LIMITED_API"]
+test-skip = "cp315*"  # h5py doesn't have binary wheels yet
 
 [tool.extension-helpers]
 use_extension_helpers = "true"
