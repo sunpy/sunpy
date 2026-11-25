@@ -25,6 +25,7 @@ from sunpy.map.maputils import (
     is_all_on_disk,
     map_edges,
     on_disk_bounding_coordinates,
+    on_disk_mask,
     pixelate_coord_path,
     sample_at_coords,
     solar_angular_radius,
@@ -199,6 +200,22 @@ def test_coordinate_is_on_solar_disk(aia171_test_map, all_off_disk_map, all_on_d
     assert np.any(~coordinate_is_on_solar_disk(all_coordinates_from_map(straddles_limb_map)))
 
 
+def test_on_disk_mask(aia171_test_map, all_off_disk_map, all_on_disk_map, straddles_limb_map):
+    mask = on_disk_mask(aia171_test_map)
+    assert mask.shape == aia171_test_map.data.shape
+    assert mask.dtype == bool
+
+    # The result must match doing the same check by hand with the two
+    # underlying functions.
+    expected = coordinate_is_on_solar_disk(all_coordinates_from_map(aia171_test_map))
+    np.testing.assert_array_equal(mask, expected)
+
+    assert np.all(~on_disk_mask(all_off_disk_map))
+    assert np.all(on_disk_mask(all_on_disk_map))
+    assert np.any(on_disk_mask(straddles_limb_map))
+    assert np.any(~on_disk_mask(straddles_limb_map))
+
+
 # Testing values are derived from running the code, not from external sources
 def test_on_disk_bounding_coordinates(aia171_test_map):
     bl, tr = on_disk_bounding_coordinates(aia171_test_map)
@@ -266,6 +283,8 @@ def test_functions_raise_non_frame_map(non_helioprojective_map):
         contains_limb(non_helioprojective_map)
     with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
         on_disk_bounding_coordinates(non_helioprojective_map)
+    with pytest.raises(ValueError, match=r"HeliographicCarrington, .* Helioprojective"):
+        on_disk_mask(non_helioprojective_map)
 
 
 def test_contains_coord(aia171_test_map):
