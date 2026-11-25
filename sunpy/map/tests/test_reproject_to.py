@@ -209,8 +209,6 @@ def test_reproject_to_result_can_be_operated_on(aia171_test_map, hpc_header):
 
 
 def test_reproject_to_keeps_plot_settings(aia171_test_map, hpc_header):
-    # The source class sets plot_settings in its constructor, so they have to be
-    # applied to the result afterwards or a user's changes are overwritten
     aia171_test_map.plot_settings["cmap"] = "viridis"
 
     assert aia171_test_map.reproject_to(hpc_header).plot_settings["cmap"] == "viridis"
