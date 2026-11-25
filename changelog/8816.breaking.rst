@@ -5,6 +5,6 @@ An implementation to reuse the `~.GenericMap` setter is:
 
     @wcs.setter
     def wcs(self, value):
-        GenericMap.wcs.fset(self, wcs)
+        GenericMap.wcs.fset(self, value)
 
 Although, it is likely that changes will need to be made to any custom getter implementation as well.
