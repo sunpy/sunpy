@@ -2018,8 +2018,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
                                      return_footprint=return_footprint, **reproject_args)
         outmap, footprint = output if return_footprint else (output, None)
 
-        # Build from the target WCS alone, going back through the factory so that
-        # the class matches the target metadata rather than the source map.
+        # Build the metadata from the target WCS alone, as header values describing
+        # the source map's grid no longer apply to the reprojected data.
         new_meta = MetaDict(target_wcs.to_header(relax=True))
         for n in range(1, target_wcs.naxis + 1):
             new_meta[f"NAXIS{n}"] = outmap.data.shape[::-1][n - 1]
@@ -2036,7 +2036,8 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
             new_meta['DATE-AVG'] = ref_date
             new_meta['DATE-OBS'] = self.date.utc.isot
 
-        outmap = sunpy.map.Map(outmap.data, new_meta, plot_settings=self.plot_settings)
+        # Create and return a new GenericMap
+        outmap = GenericMap(outmap.data, meta=new_meta, plot_settings=self.plot_settings)
 
         # Compared with a tolerance because a WCS round-tripped through a FITS header carries float noise
         if not u.isclose(self.rsun_meters, outmap.rsun_meters, rtol=1e-11):
