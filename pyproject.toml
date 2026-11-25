@@ -185,6 +185,7 @@ sunpy = "sunpy.io.special.asdf.entry_points:get_extensions"
 
 [tool.cibuildwheel]
 environment-pass = ["EXTENSION_HELPERS_PY_LIMITED_API"]
+test-skip = "cp315*"  # h5py doesn't have binary wheels yet
 
 [tool.extension-helpers]
 use_extension_helpers = "true"
