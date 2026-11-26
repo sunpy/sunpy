@@ -92,8 +92,8 @@ def test_wcs(sot_map):
     sot_map.wcs.pixel_to_world(0, 0)
 
 
-def test_old_sig_sources(sot):
+def test_old_sig_sources(sot_map):
     with pytest.warns(SunpyDeprecationWarning,
                       match="header as a positional argument is deprecated"):
-        smap = SOTMap(sot.data, sot.meta)
+        smap = SOTMap(sot_map.data, sot_map.meta)
     assert isinstance(smap, SOTMap)
