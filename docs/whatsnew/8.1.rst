@@ -14,10 +14,37 @@ On this page, you can read about some of the big changes in this release.
 
 ``sunpy`` 8.1 also includes a large number of smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 
-
 Updates to minimum dependencies
 ===============================
 
 The minimum required versions of the following packages have been updated:
 
   - Update this when it happens
+
+New Fido clients for Hinode SOT data
+====================================
+
+There are now two new Fido clients for searching the Hinode Solar Optical Telescope (SOT) data hosted by the `DARTS archive <https://darts.isas.jaxa.jp/en>`__.
+`~sunpy.net.dataretriever.HinodeSOTFGClient` provides the Filtergraph (FG) data at levels 0 and 1, and `~sunpy.net.dataretriever.HinodeSOTSPClient` provides the Spectro-Polarimeter (SP) data at levels 0, 1, 2 and 2.1.
+The client is chosen with ``a.Detector.fg`` or ``a.Detector.sp``, and adding ``a.Provider.darts`` leaves out VSO results.
+
+.. code-block:: python
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> results = Fido.search(a.Time("2011-12-13 06:04:30", "2011-12-13 06:04:40"), a.Instrument.sot,
+    ...                       a.Level(1), a.Detector.fg, a.Provider.darts)  # doctest: +REMOTE_DATA
+    >>> results  # doctest: +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
+    Results from 1 Provider:
+    <BLANKLINE>
+    4 Results from the HinodeSOTFGClient:
+    Source: https://data.darts.isas.jaxa.jp/pub/hinode/sot/
+    <BLANKLINE>
+           Start Time               End Time        Instrument Source Provider Level Detector
+    ----------------------- ----------------------- ---------- ------ -------- ----- --------
+    2011-12-13 06:04:30.000 2011-12-13 06:04:30.999        SOT HINODE    DARTS     1       FG
+    2011-12-13 06:04:33.000 2011-12-13 06:04:33.999        SOT HINODE    DARTS     1       FG
+    2011-12-13 06:04:36.000 2011-12-13 06:04:36.999        SOT HINODE    DARTS     1       FG
+    2011-12-13 06:04:39.000 2011-12-13 06:04:39.999        SOT HINODE    DARTS     1       FG
+    <BLANKLINE>
+    <BLANKLINE>
