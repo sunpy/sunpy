@@ -74,8 +74,8 @@ class HinodeSOTSPClient(GenericClient):
     .. note::
 
         Level 1, 2 and 2.1 data are stored per scan.
-        A search returns every file of each scan that **started** within the time range:
-        hundreds of files per scan for level 1, one for levels 2 and 2.1.
+        A search returns every file of each scan that **started** within the time range,
+        this is hundreds of files per scan for level 1, one file for levels 2 and 2.1.
         Scans that started earlier are not returned.
         Each file is listed with the start time of its scan.
 

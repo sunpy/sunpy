@@ -47,7 +47,7 @@ def query(detector, level, start='2011-12-13', end='2011-12-14'):
 
 
 @pytest.fixture
-def urlopen():
+def mock_darts_listing():
     def fake_urlopen(url):
         if (directory := url.removeprefix(DARTS)) not in LISTINGS:
             raise HTTPError(url, 404, 'Not Found', {}, None)
@@ -76,15 +76,15 @@ def test_can_handle_query(client, detector, level, can_handle):
 
 
 @pytest.mark.parametrize(('client', 'detector', 'level', 'start', 'end', 'files'), SEARCHES)
-def test_search(urlopen, client, detector, level, start, end, files):
+def test_search(mock_darts_listing, client, detector, level, start, end, files):
     qr = client().search(*query(detector, level, start, end))
     assert list(qr['url']) == [DARTS + file for file in files]
 
 
-def test_scan_requests(urlopen):
+def test_scan_requests(mock_darts_listing):
     hinode.HinodeSOTSPClient().search(*query('SP', '2'))
     # Two day listings and two scans, not one request for each of the 86401 seconds.
-    assert urlopen.call_count == 4
+    assert mock_darts_listing.call_count == 4
 
 
 @pytest.mark.parametrize(('client', 'detector', 'level'), [
@@ -97,7 +97,7 @@ def test_search_error(client, detector, level):
         client().search(*query(detector, level))
 
 
-def test_show(urlopen):
+def test_show(mock_darts_listing):
     qr = hinode.HinodeSOTSPClient().search(*query('SP', '2'))
     allcols = {'Start Time', 'End Time', 'Instrument', 'Source', 'Provider', 'Level', 'Detector', 'url'}
     assert set(qr.show().colnames) == allcols
