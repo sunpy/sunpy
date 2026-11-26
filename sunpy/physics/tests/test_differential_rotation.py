@@ -219,7 +219,6 @@ def test_differential_rotate_masked_map(aia171_test_map_with_mask):
     assert dmap.mask is None
 
 
-
 # ----- Testing with time input -----
 def test_differential_rotate_time_full_disk(aia171_test_map):
     pytest.importorskip("skimage")
