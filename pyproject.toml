@@ -32,10 +32,10 @@ authors = [
 ]
 dependencies = [
   "astropy>=7.2.3,!=8.0.0,!=8.0.1", # due to astropy#20600
-  "fsspec>=2024.9.0",
+  "fsspec>=2024.12.0",
   "numpy>=1.26.0",  # Not bumping numpy to 2.0 until we need to
-  "numpy>=2.3.0;python_version=='3.14'",
-  "packaging>=24.1",
+  "numpy>=2.3.0;python_version>='3.14'",
+  "packaging>=25.0",
   "parfive[ftp]>=2.2.0",
   "pyerfa>=2.0.1.1",
   "requests>=2.33.0",
@@ -47,42 +47,42 @@ keywords = ["solar physics", "solar", "science", "sun", "wcs", "coordinates"]
 # The list of available extras is also in the installation docs,
 # if you add or remove one please edit it there as well.
 asdf = [
-  "asdf-astropy>=0.7.0",
-  "asdf>=3.3.0",
+  "asdf-astropy>=0.8.0",
+  "asdf>=4.1.0",
 ]
-dask = ["dask[array]>=2024.6.0"]
+dask = ["dask[array]>=2025.1.0"]
 image = [
-  "scipy>=1.14.1",
+  "scipy>=1.15.0",
 ]
 jpeg2000 = [
   "glymur>=0.14.0",
   # While a direct dependency of glymur, we import it to save JPEG2000 files.
   # and we had issues with specific versions lxml.
-  "lxml>=5.3.0",
+  "lxml>=5.4.0",
 ]
 map = [
-  "contourpy>=1.3.0",
+  "contourpy>=1.4.0",
   "matplotlib>=3.10.0",
   "mpl-animators>=1.2.0",
   "ndcube[reproject]>=2.4.3",
-  "scipy>=1.14.1",
+  "scipy>=1.15.0",
 ]
-opencv = ["opencv-python>=4.8.0.74,!=4.13.0.*"]
+opencv = ["opencv-python>=4.11.0.86,!=4.13.0.*"]
 net = [
   "beautifulsoup4>=4.13.1",
-  "drms>=0.8.0",
-  "python-dateutil>=2.9.0",
-  "tqdm>=4.67.0",
+  "drms>=0.9.0",
+  "python-dateutil>=2.9.0",  # 3.0 is incompatible with botocore
+  "tqdm>=4.68.0",
   "zeep>=4.3.0",
 ]
-scikit-image = ["scikit-image>=0.24.0"]
+scikit-image = ["scikit-image>=0.25.0"]
 spice = ["spiceypy>=7.0.0"]
 timeseries = [
   "cdflib>=1.3.2",
-  "h5netcdf>=1.4.0",
+  "h5netcdf>=1.5.0",
   # While a not direct dependency
   # We need to raise this to ensure the goes netcdf files open.
-  "h5py>=3.12.0",
+  "h5py>=3.13.0",
   "matplotlib>=3.10.0",
   # Avoid native crashes in pandas 3.0.4 with Python 3.13 when handling TimeSeries data.
   "pandas>=2.3.0,!=3.0.4",
@@ -99,9 +99,9 @@ all = ["sunpy[core,asdf,jpeg2000,opencv,spice,scikit-image]"]
 # We also can't easily test this in oldestdeps because of
 # co-versioning of aiobotocore & boto3 / botocore
 s3 = [
-  "fsspec[s3]>=2024.9.0",
-  "aiobotocore>=2.14.0",
-  "boto3>=1.35.0",
+  "fsspec[s3]>=2024.12.0",
+  "aiobotocore>=2.16.0",
+  "boto3>=1.36.0",
 ]
 jupyter = [
   "itables>=2.2.4",
@@ -111,17 +111,17 @@ jupyter = [
 tests-only = [
   "hvpy>=1.1.0",
   "jplephem>=2.23",
-  "psutil>=6.0.0",
+  "psutil>=7.0.0",
   "pytest-astropy>=0.12.0",
   "pytest-mpl>=0.18.0",
   "pytest-run-parallel>=0.6.0",
-  "pytest>=8.3.0",
+  "pytest>=8.4.0",
   "responses>=0.26.0",
 ]
 asdf-tests = [
   "sunpy[asdf]",
   # We can only install this plugin when we have the asdf extra installed
-  "pytest-asdf-plugin>=0.1.1",
+  "pytest-asdf-plugin>=0.2.0",
 ]
 # This extra allows you to run all tests
 tests = [
@@ -129,8 +129,8 @@ tests = [
 ]
 docs = [
   "sunpy[all]",
-  "sphinx>=7.4.0",
-  "sphinx-automodapi>=0.18.0",
+  "sphinx>=8.2.0",
+  "sphinx-automodapi>=0.19.0",
   "hvpy>=1.1.0",
   "ruamel.yaml>=0.19.0",
   "sphinx-changelog>=1.6.0",
@@ -139,18 +139,18 @@ docs = [
   "sphinx-gallery>=0.21.0",
   "sphinxext-opengraph>=0.10.0",
   "sunpy-sphinx-theme>=2.1.0",
-  "sphinxcontrib-bibtex>=2.2.0",
-  "sphinx-autodoc-typehints>=2.2.0",
+  "sphinxcontrib-bibtex>=2.7.0",
+  "sphinx-autodoc-typehints>=3.0.0",
 ]
 docs-gallery = [
   "sunpy[docs]",
   "astroquery>=0.4.6",
   "jplephem>=2.23",
-  "pillow",
-  "exifread",
+  "pillow>=11.1.0",
+  "exifread>=3.1.0",
   "ndcube>=2.4.3",
-  "dkist",
-  "reproject>=0.14.0",
+  "dkist>=1.10",
+  "reproject>=0.15.0",
 ]
 dev = ["sunpy[docs,tests]"]
 
