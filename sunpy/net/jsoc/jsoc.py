@@ -5,7 +5,6 @@ import time
 import urllib
 from pathlib import Path
 
-import drms
 import numpy as np
 import pandas as pd
 import parfive
@@ -14,6 +13,8 @@ from packaging.version import Version
 import astropy.table
 import astropy.time
 import astropy.units as u
+
+import drms
 
 from sunpy import config, log
 from sunpy.net.attr import and_
