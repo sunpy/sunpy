@@ -1142,8 +1142,8 @@ class GenericMap(MapMetaMixin, NDData):
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_meta['cdelt1'] = (self.scale[0] / scale).value
-            new_meta['cdelt2'] = (self.scale[1] / scale).value
+            new_meta['cdelt1'] = (self.scale[0] / scale).to_value(self.spatial_units[0] / u.pix)
+            new_meta['cdelt2'] = (self.scale[1] / scale).to_value(self.spatial_units[1] / u.pix)
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_meta.pop('CROTA1', None)

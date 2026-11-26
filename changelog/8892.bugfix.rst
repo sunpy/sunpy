@@ -1,0 +1,1 @@
+Fixed the pixel scale of `~sunpy.map.sources.GONGHalphaMap` and `~sunpy.map.sources.GONGMagnetogramMap` not changing after `~sunpy.map.GenericMap.resample` or `~sunpy.map.GenericMap.superpixel`, which made the field of view shrink.
