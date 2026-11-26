@@ -1,0 +1,4 @@
+Fixed :meth:`sunpy.map.GenericMap.save` silently scaling the data a second time when
+writing a map that was read from a file using ``BSCALE``/``BZERO`` (such as HMI data)
+and ``hdu_type`` was given as an HDU instance rather than a class.
+The saved file now contains the same physical values as the map in memory.
