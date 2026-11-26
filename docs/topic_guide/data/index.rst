@@ -10,5 +10,6 @@ These guides explain how SunPy represents observational data and the metadata as
    :maxdepth: 1
 
    map_rsun
+   submap_vs_crop
    timeseries_metadata
    history_comments

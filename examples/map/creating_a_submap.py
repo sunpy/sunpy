@@ -1,9 +1,14 @@
 """
-==============
-Cropping a Map
-==============
+=================
+Creating a submap
+=================
 
-How to crop a map by using submap.
+How to cut a rectangular region from a map using
+:meth:`~sunpy.map.GenericMap.submap`.
+
+For another way to crop a map, see the example using :meth:`~ndcube.NDCube.crop`:
+:ref:`sphx_glr_generated_gallery_map_cropping_a_map.py`. The
+:ref:`sunpy-topic-guide-submap-vs-crop` guide explains which method to use.
 """
 # sphinx_gallery_tags = ["Map", "SWAP", "Coordinates"]
 
@@ -15,21 +20,21 @@ from astropy.coordinates import SkyCoord
 import sunpy.data.sample
 import sunpy.map
 
-###############################################################################
-# We start with the sample data
+################################################################################
+# Load the sample map.
 
 swap_map = sunpy.map.Map(sunpy.data.sample.SWAP_LEVEL1_IMAGE)
 
-##############################################################################
-# To crop the data you create a submap, specifying the top right and bottom
-# left as SkyCoord objects.
+###############################################################################
+# To cut out a rectangular region, create a submap by specifying the top-right
+# and bottom-left corners as `~astropy.coordinates.SkyCoord` objects.
 
 top_right = SkyCoord(0 * u.arcsec, -200 * u.arcsec, frame=swap_map.coordinate_frame)
 bottom_left = SkyCoord(-900 * u.arcsec, -900 * u.arcsec, frame=swap_map.coordinate_frame)
 swap_submap = swap_map.submap(bottom_left, top_right=top_right)
 
 ###############################################################################
-# Let's plot the results.
+# Plot the submap.
 
 fig = plt.figure()
 ax = fig.add_subplot(projection=swap_submap)

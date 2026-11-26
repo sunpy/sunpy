@@ -1,0 +1,1 @@
+Added a gallery example showing how to crop a `~sunpy.map.Map` with :meth:`~ndcube.NDCube.crop`.
