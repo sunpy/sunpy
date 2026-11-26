@@ -2738,6 +2738,12 @@ def check_arithmetic_value_and_units(map_new, data_expected):
     assert u.allclose(map_new.quantity, data_expected)
     assert map_new.unit.is_equivalent(data_expected.unit)
 
+@pytest.fixture
+def aia171_test_map_cmap(aia171_test_map):
+    aia171_test_map = deepcopy(aia171_test_map)
+    aia171_test_map.plot_settings["cmap"] = "RdBu"
+    return aia171_test_map
+
 
 @pytest.mark.parametrize('value', [
     10 * u.DN,
@@ -2745,15 +2751,19 @@ def check_arithmetic_value_and_units(map_new, data_expected):
     u.Quantity(np.random.rand(128), u.DN),
     u.Quantity(np.random.rand(128, 128), u.DN),
 ])
-def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
-    new_map = aia171_test_map + value
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity + value)
-    new_map = value + aia171_test_map
-    check_arithmetic_value_and_units(new_map, value + aia171_test_map.quantity)
-    new_map = aia171_test_map - value
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity - value)
-    new_map = value - aia171_test_map
-    check_arithmetic_value_and_units(new_map, value - aia171_test_map.quantity)
+def test_map_arithmetic_addition_subtraction(aia171_test_map_cmap, value):
+    new_map = aia171_test_map_cmap + value
+    check_arithmetic_value_and_units(new_map, aia171_test_map_cmap.quantity + value)
+    assert new_map.plot_settings["cmap"] == "RdBu"
+    new_map = value + aia171_test_map_cmap
+    check_arithmetic_value_and_units(new_map, value + aia171_test_map_cmap.quantity)
+    assert new_map.plot_settings["cmap"] == "RdBu"
+    new_map = aia171_test_map_cmap - value
+    check_arithmetic_value_and_units(new_map, aia171_test_map_cmap.quantity - value)
+    assert new_map.plot_settings["cmap"] == "RdBu"
+    new_map = value - aia171_test_map_cmap
+    check_arithmetic_value_and_units(new_map, value - aia171_test_map_cmap.quantity)
+    assert new_map.plot_settings["cmap"] == "RdBu"
 
 
 @pytest.mark.parametrize('value', [
@@ -2765,26 +2775,32 @@ def test_map_arithmetic_addition_subtraction(aia171_test_map, value):
     np.random.rand(128),
     np.random.rand(128, 128),
 ])
-def test_map_arithmetic_multiplication_division(aia171_test_map, value):
-    new_map = aia171_test_map * value
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity * value)
-    new_map = value * aia171_test_map
-    check_arithmetic_value_and_units(new_map, value * aia171_test_map.quantity)
-    new_map = aia171_test_map / value
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity / value)
+def test_map_arithmetic_multiplication_division(aia171_test_map_cmap, value):
+    new_map = aia171_test_map_cmap * value
+    check_arithmetic_value_and_units(new_map, aia171_test_map_cmap.quantity * value)
+    assert new_map.plot_settings["cmap"] == "RdBu"
+    new_map = value * aia171_test_map_cmap
+    check_arithmetic_value_and_units(new_map, value * aia171_test_map_cmap.quantity)
+    assert new_map.plot_settings["cmap"] == "RdBu"
+    new_map = aia171_test_map_cmap / value
+    check_arithmetic_value_and_units(new_map, aia171_test_map_cmap.quantity / value)
+    assert new_map.plot_settings["cmap"] == "RdBu"
     with pytest.warns(RuntimeWarning, match='divide by zero encountered in'):  # NOQA: PT031
-        new_map = value / aia171_test_map
-        check_arithmetic_value_and_units(new_map, value / aia171_test_map.quantity)
+        new_map = value / aia171_test_map_cmap
+        check_arithmetic_value_and_units(new_map, value / aia171_test_map_cmap.quantity)
+        assert new_map.plot_settings["cmap"] == "RdBu"
 
 
-def test_map_arithmetic_pow(aia171_test_map):
-    new_map = aia171_test_map ** 2
-    check_arithmetic_value_and_units(new_map, aia171_test_map.quantity ** 2)
+def test_map_arithmetic_pow(aia171_test_map_cmap):
+    new_map = aia171_test_map_cmap ** 2
+    check_arithmetic_value_and_units(new_map, aia171_test_map_cmap.quantity ** 2)
+    assert new_map.plot_settings["cmap"] == "RdBu"
 
 
-def test_map_arithmetic_neg(aia171_test_map):
-    new_map = -aia171_test_map
-    check_arithmetic_value_and_units(new_map, -aia171_test_map.quantity)
+def test_map_arithmetic_neg(aia171_test_map_cmap):
+    new_map = -aia171_test_map_cmap
+    check_arithmetic_value_and_units(new_map, -aia171_test_map_cmap.quantity)
+    assert new_map.plot_settings["cmap"] == "RdBu"
 
 
 @pytest.mark.parametrize("value", ['map', 'foobar', None, ['foo', 'bar']])

@@ -791,8 +791,9 @@ class GenericMap(MapMetaMixin, NDCube, metaclass=GenericMapDeprecationMeta):
         new_map = super()._new_instance(**kwargs)
         # Applied after the map is built because some map sources set plot_settings in
         # their own constructor, which would otherwise overwrite these.
-        if plot_settings is not None:
-            new_map.plot_settings.update(plot_settings)
+        if plot_settings is None:
+            plot_settings = {}
+        new_map.plot_settings.update({**self.plot_settings, **plot_settings})
         return new_map
 
     def _get_lon_lat(self, frame):
