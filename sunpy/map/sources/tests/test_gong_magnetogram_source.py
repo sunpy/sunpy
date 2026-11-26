@@ -5,6 +5,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header_obj, get_header_from_file, get_test_filepath
 from sunpy.map.sources.gong import GONGMagnetogramMap
 from sunpy.time import parse_time
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -75,3 +76,10 @@ def test_rsun_obs(gong_magnetogram):
 def test_wcs(gong_magnetogram):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     gong_magnetogram.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(gong_magnetogram):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = GONGMagnetogramMap(gong_magnetogram.data, gong_magnetogram.meta)
+    assert isinstance(smap, GONGMagnetogramMap)

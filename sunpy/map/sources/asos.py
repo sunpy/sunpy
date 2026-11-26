@@ -48,8 +48,36 @@ class HXIMap(GenericMap):
     * The tests and calibrations paper: :cite:t:`Su_asos_hxi_tests_calibrations_2024`
     """
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
         self._nickname = self.meta.get('nickname', 'ASO-S/HXI')
         self.plot_settings['cmap'] = 'rhessi'
 

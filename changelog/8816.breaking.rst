@@ -1,0 +1,10 @@
+Subclasses of `~.GenericMap` which override the ``wcs`` property will now need to also override the setter to avoid errors.
+An implementation to reuse the `~.GenericMap` setter is:
+
+.. code-block:: python
+
+    @wcs.setter
+    def wcs(self, value):
+        GenericMap.wcs.fset(self, value)
+
+Although, it is likely that changes will need to be made to any custom getter implementation as well.

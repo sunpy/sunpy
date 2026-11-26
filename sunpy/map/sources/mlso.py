@@ -39,8 +39,36 @@ class KCorMap(GenericMap):
     # MLSO location per Wikipedia (https://en.wikipedia.org/wiki/Mauna_Loa_Solar_Observatory)
     _earth_location = EarthLocation(-155.576*u.deg, 19.536*u.deg, 3394*u.m)
 
-    def __init__(self, data, header, **kwargs):
-        super().__init__(data, header, **kwargs)
+    def __init__(
+        self,
+        data,
+        wcs=None,
+        uncertainty=None,
+        mask=None,
+        meta=None,
+        unit=None,
+        copy=False,
+        psf=None,
+        *,
+        extra_coords=None,
+        global_coords=None,
+        plot_settings=None,
+        **kwargs,
+    ):
+        super().__init__(
+            data=data,
+            wcs=wcs,
+            uncertainty=uncertainty,
+            mask=mask,
+            meta=meta,
+            unit=unit,
+            copy=copy,
+            psf=psf,
+            extra_coords=extra_coords,
+            global_coords=global_coords,
+            plot_settings=plot_settings,
+            **kwargs,
+        )
 
         self._nickname = self.detector
 

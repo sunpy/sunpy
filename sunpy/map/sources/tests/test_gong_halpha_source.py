@@ -5,6 +5,7 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources import GONGHalphaMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -65,3 +66,10 @@ def test_earth_location(gong_halpha):
 def test_observer_coordinate(gong_halpha):
     xyz_expected = [146712246479.363, -5563586.169750214, -17605285536.73928] * u.m
     assert u.isclose(gong_halpha.observer_coordinate.data.xyz, xyz_expected, rtol=1e-8).all()
+
+
+def test_old_sig_sources(gong_halpha):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = GONGHalphaMap(gong_halpha.data, gong_halpha.meta)
+    assert isinstance(smap, GONGHalphaMap)

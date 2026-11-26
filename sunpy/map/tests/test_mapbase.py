@@ -1,6 +1,8 @@
 """
 Test Generic Map
 """
+import contextlib
+import inspect
 import re
 import tempfile
 from copy import deepcopy
@@ -19,6 +21,7 @@ import astropy.wcs
 from astropy.coordinates import Latitude, SkyCoord
 from astropy.io import fits
 from astropy.io.fits.verify import VerifyWarning
+from astropy.nddata import StdDevUncertainty
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.visualization import wcsaxes
 from astropy.wcs import InconsistentAxisTypesError
@@ -38,7 +41,7 @@ from sunpy.map.mapbase import GenericMap
 from sunpy.map.sources import AIAMap
 from sunpy.tests.helpers import asdf_entry_points, figure_test
 from sunpy.time import parse_time
-from sunpy.util import SunpyUserWarning
+from sunpy.util import MetaDict, SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
 from .strategies import matrix_meta
@@ -55,7 +58,7 @@ def test_fits_data_comparison(aia171_test_map):
 def test_header_fits_io():
     with pytest.warns(VerifyWarning, match="Invalid 'BLANK' keyword in header."):
         with fits.open(get_test_filepath('aia_171_level1.fits')) as hdu:
-            AIAMap(hdu[0].data, hdu[0].header)
+            AIAMap(hdu[0].data, meta=hdu[0].header)
 
 
 def test_get_item(generic_map):
@@ -688,6 +691,17 @@ def test_unit_kwarg_only_rewrites_bunit_when_the_unit_changes(generic_map, bunit
 
     assert new_map.unit == unit
     assert new_map.meta['bunit'] == expected_bunit
+
+
+@pytest.mark.parametrize('uncertainty_unit', [None, u.DN / u.s])
+def test_unit_kwarg_sets_uncertainty_unit(generic_map, uncertainty_unit):
+    generic_map.meta['bunit'] = 'DN'
+    uncertainty = StdDevUncertainty(np.ones(generic_map.data.shape), unit=uncertainty_unit)
+    new_map = sunpy.map.Map(generic_map.data, generic_map.meta, unit=u.DN / u.s,
+                            uncertainty=uncertainty)
+
+    assert new_map.unit == u.DN / u.s
+    assert new_map.uncertainty.unit == u.DN / u.s
 
 
 # ==============================================================================
@@ -1901,7 +1915,7 @@ def test_non_str_key():
               None: None,  # Cannot parse this into WCS
               }
     with pytest.raises(ValueError, match='All MetaDict keys must be strings'):
-        sunpy.map.GenericMap(np.zeros((10, 10)), header)
+        sunpy.map.GenericMap(np.zeros((10, 10)), meta=header)
 
 
 def test_updating_of_naxisi_on_rotate(aia171_test_map):
@@ -2433,3 +2447,172 @@ def test_submap_nan_error(aia171_test_map):
     coord_other = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective', observer='earth', obstime=aia171_test_map.date)
     with pytest.raises(ValueError, match="The provided input coordinates to"):
         aia171_test_map.submap(coord_other, width=1000*u.arcsec, height=1000*u.arcsec)
+
+
+# Test that args get passed through to NDCube correctly
+def test_map_mask_arg(simple_map):
+    mask = np.zeros(simple_map.data.shape, dtype=bool)
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, mask=mask)
+    np.testing.assert_array_equal(smap.mask, mask)
+
+
+def test_map_uncertainty_arg(simple_map):
+    uncertainty = np.ones(simple_map.data.shape)
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, uncertainty=uncertainty)
+    np.testing.assert_array_equal(smap.uncertainty.array, uncertainty)
+
+
+def test_map_copy_arg(simple_map):
+    data = np.ones(simple_map.data.shape)
+    smap = GenericMap(data, meta=simple_map.meta, copy=True)
+    data[0, 0] = 42
+    assert smap.data[0, 0] == 1
+
+
+def test_map_plot_settings_arg(simple_map):
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, plot_settings={"cmap": "plasma"})
+    assert smap.plot_settings["cmap"] == "plasma"
+
+
+# Tests for deprecation machinery
+@pytest.fixture
+def reset_map_registry():
+    reg = deepcopy(GenericMap._registry)
+    yield
+    GenericMap._registry = reg
+
+
+def test_genericmap_subclass_warn():
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyMap(GenericMap):
+            def __init__(self, data, header, plot_settings=None): pass
+
+            @classmethod
+            def _is_datasource_for(cls, data, header, **kwargs): return True
+
+    # Check this one doesn't warn
+    class MyMapNew(GenericMap):
+        def __init__(self, data, wcs=None, meta=None, **kwargs): pass
+
+
+def test_genericmap_old_sig_subclass_factory(simple_map, reset_map_registry):
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyOldSourceMap(GenericMap):
+            def __init__(self, data, header, **kwargs):
+                super().__init__(data, header, **kwargs)
+
+            @classmethod
+            def is_datasource_for(cls, data, header, **kwargs):
+                return str(header.get("instrume", "")).startswith("MyOldSource")
+
+    # A Translator class was injected between the subclass and GenericMap
+    assert MyOldSourceMap.__mro__[1].__name__ == "GenericMapTranslator"
+
+    assert MyOldSourceMap in GenericMap._registry
+    meta = dict(simple_map.meta)
+    meta["instrume"] = "MyOldSource"
+    smap = sunpy.map.Map(simple_map.data, meta)
+    assert isinstance(smap, MyOldSourceMap)
+    assert isinstance(smap.meta, MetaDict)
+
+
+def test_genericmap_subclass_sig_rewriting():
+    with pytest.warns(SunpyDeprecationWarning, match="signature is deprecated"):
+        class MyMap(GenericMap):
+            def __init__(self, data, header, plot_settings=None): pass
+
+    sig = inspect.signature(MyMap.__init__)
+    assert "header" not in sig.parameters
+    assert sig == inspect.signature(GenericMap.__init__)
+    assert "header" not in sig.parameters
+    assert "meta" in sig.parameters
+
+@pytest.mark.parametrize(("args", "kwargs", "deprecated"),
+                         [pytest.param(("data", "meta"), {}, True, id="positional argument with 'header' (old sig)"),
+                          pytest.param(("data", "wcs"), {}, False, id="positional argument with 'wcs' (new sig)"),
+                          pytest.param(("data",), {"header": "meta"}, True, id="keyword argument header (old sig)"),
+                          pytest.param(("data",), {"meta": "meta"}, False, id="keyword argument meta (new sig)"),
+                          pytest.param(("data",), {"meta": "meta", "wcs": "wcs"}, False, id="both meta and wcs (identical)"),
+                          ])
+
+def test_generic_map_both_sig(simple_map, args, kwargs, deprecated):
+    arg_lookup = {
+        "data": simple_map.data,
+        "meta": simple_map.meta,
+        "header": simple_map.meta,
+        "wcs": simple_map.wcs,
+    }
+    cargs = (arg_lookup[a] for a in args)
+    ckwargs = {k: arg_lookup[v] for k, v in kwargs.items()}
+
+    context = contextlib.nullcontext()
+    if deprecated:
+        context = pytest.warns(SunpyDeprecationWarning)
+
+    with context:
+        smap = GenericMap(*cargs, **ckwargs)
+        if "meta" in args or "meta" in kwargs or "header" in kwargs:
+            assert smap.meta == simple_map.meta
+        else:
+            assert smap.meta == MetaDict(simple_map.wcs.to_header())
+
+    # Ensure that both pixel to worlds match (WCS is the same)
+    assert_allclose(
+        smap.wcs.pixel_to_world_values(0, 0),
+        simple_map.wcs.pixel_to_world_values(0, 0),
+    )
+
+def test_generic_map_constructed_from_wrapped_wcs(simple_map):
+    sliced_wcs = SlicedLowLevelWCS(simple_map.wcs, (slice(None), slice(None)))
+    smap = GenericMap(simple_map.data, sliced_wcs)
+    # Ensure that both pixel to worlds match (WCS is the same)
+    assert_allclose(
+        smap.wcs.pixel_to_world_values(0, 0),
+        simple_map.wcs.pixel_to_world_values(0, 0),
+    )
+
+
+@pytest.fixture
+def simple_map_2():
+    """
+    A simple 9x9 map, with its center at (0, 0),
+    and scaled differently in each direction.
+    """
+    data = np.arange(81).reshape((9, 9))
+    ref_coord = SkyCoord(0.0, 0.0, frame='helioprojective', obstime='2020-01-01 00:00:00', unit='deg',
+                         observer=SkyCoord(0 * u.deg, 0 * u.deg, 1 * u.AU, frame='heliographic_stonyhurst'))
+    ref_pix = [4, 4] * u.pix
+    scale = [4, 2] * u.arcsec / u.pix
+    header = sunpy.map.make_fitswcs_header(data, ref_coord, reference_pixel=ref_pix, scale=scale)
+    return sunpy.map.Map(data, header)
+
+
+def test_wcs_arg_overrides_meta(simple_map, simple_map_2):
+    """
+    Test that the wcs argument wins, when also passed with meta.
+    """
+    smap = GenericMap(simple_map.data, meta=simple_map.meta, wcs=simple_map_2.wcs)
+    assert u.allclose(smap.scale, [4, 2] * u.arcsec / u.pix)
+
+
+def test_wcs_arg_sip(aia171_test_map):
+    wcs1 = aia171_test_map.wcs
+    header_sip = wcs1.to_header()
+    k1 = -7e-12
+
+    header_sip["CTYPE1"] = header_sip["CTYPE1"] + "-SIP"
+    header_sip["CTYPE2"] = header_sip["CTYPE2"] + "-SIP"
+    header_sip['A_ORDER'] = 3
+    header_sip['B_ORDER'] = 3
+    header_sip['A_3_0'] = -k1
+    header_sip['A_1_2'] = -k1
+    header_sip['B_0_3'] = -k1
+    header_sip['B_2_1'] = -k1
+    header_sip['A_DMAX'] = 1.0
+    header_sip['B_DMAX'] = 1.0
+
+    sip_wcs = astropy.wcs.WCS(header_sip)
+
+    smap = GenericMap(aia171_test_map.data, wcs=sip_wcs)
+    np.testing.assert_allclose(smap.wcs.sip.a, sip_wcs.sip.a)
+    np.testing.assert_allclose(smap.wcs.sip.b, sip_wcs.sip.b)
