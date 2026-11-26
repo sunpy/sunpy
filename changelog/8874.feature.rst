@@ -1,0 +1,3 @@
+`~sunpy.map.GenericMap` now uses arithmetic operations inherited from `ndcube.NDCube`.
+As a consequence, operations such as multiplying a map by a quantity now keep the mask and propagate the uncertainty, where previously both were dropped.
+Arithmetic on a map whose BUNIT can not be parsed as a unit now keeps that BUNIT, where previously the result was made dimensionless.

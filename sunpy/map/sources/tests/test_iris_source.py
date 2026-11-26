@@ -7,8 +7,12 @@ import astropy.units as u
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.iris import SJIMap
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
+
+# The observer is now resolved when the map is constructed rather than on first
+# use of the WCS, so these maps emit the warning during fixture setup.
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 
 @pytest.fixture
@@ -55,5 +59,11 @@ def test_units(irismap):
 
 def test_wcs(irismap):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        irismap.wcs.pixel_to_world(0, 0)
+    irismap.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(irismap):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = SJIMap(irismap.data, irismap.meta)
+    assert isinstance(smap, SJIMap)

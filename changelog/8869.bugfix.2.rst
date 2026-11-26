@@ -1,0 +1,1 @@
+Fixed `~sunpy.map.GenericMap.reproject_to` raising an `AttributeError` when the target was a wrapped WCS such as `~astropy.wcs.wcsapi.SlicedLowLevelWCS`, rather than a `~astropy.wcs.WCS` or a header.

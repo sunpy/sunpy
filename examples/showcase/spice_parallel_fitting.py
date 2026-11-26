@@ -22,13 +22,14 @@ To keep the focus on the fitting, we use the SPICE Level 2 data as-is and skip s
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import CenteredNorm, LogNorm
-from ndcube import NDCube
 
 import astropy.units as u
 from astropy.io import fits
 from astropy.modeling import models as m
 from astropy.modeling.fitting import TRFLSQFitter, parallel_fit_dask
 from astropy.wcs import WCS
+
+from ndcube import NDCube
 
 from sunpy.net import Fido
 from sunpy.net import attrs as a

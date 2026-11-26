@@ -11,6 +11,7 @@ from astropy.io import fits
 
 from sunpy.map import Map
 from sunpy.map.sources import WISPRMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -331,3 +332,10 @@ def test_name(wispr_map):
 def test_wcs(wispr_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     wispr_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(wispr_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = WISPRMap(wispr_map.data, wispr_map.meta)
+    assert isinstance(smap, WISPRMap)

@@ -11,13 +11,18 @@ from sunpy.map import Map
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.soho import LASCOMap
 from sunpy.tests.helpers import skip_glymur
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 header_list = [
     "lasco_c2_25299383_s.header",
     "lasco_c3.header",
 ]
+
+
+# The observer is now resolved when the map is constructed rather than on first
+# use of the WCS, so these maps emit the warning during fixture setup.
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 
 @pytest.fixture(scope="module", params=header_list, ids=['C2', 'C3'])
@@ -103,5 +108,11 @@ def test_lasco_helioviewer_unit(lasco_helioviewer):
 
 def test_wcs(lasco_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning, match='Missing metadata for observer'):
-        lasco_map.wcs.pixel_to_world(0, 0)
+    lasco_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(lasco_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = LASCOMap(lasco_map.data, lasco_map.meta)
+    assert isinstance(smap, LASCOMap)

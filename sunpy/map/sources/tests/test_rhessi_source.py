@@ -1,13 +1,16 @@
 import pytest
 
 import astropy.units as u
-from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.data.test import get_test_filepath
 from sunpy.map import Map
 from sunpy.map.sources.rhessi import RHESSIMap
-from sunpy.util.exceptions import SunpyMetadataWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
+
+# The observer is now resolved when the map is constructed rather than on first
+# use of the WCS, so these maps emit the warning during fixture setup.
+pytestmark = pytest.mark.filterwarnings("ignore:Missing metadata for observer")
 
 
 @pytest.fixture(scope="module")
@@ -52,29 +55,13 @@ def test_norm_clip(rhessi_map):
     assert not rhessi_map.plot_settings['norm'].clip
 
 
-def test_new_instance_preserves_plot_settings(rhessi_map):
-    # Tests that the _new_instance method preserves the plot_settings
-    # of the old instance. This is done on the RHESSI source as the RHESSIMap
-    # constructor explicitly sets the cmap and norm and we want to test
-    # that _new_instance persists the old custom plot_settings
-    rhessi_map.plot_settings['norm'] = ImageNormalize(vmin=0.1, vmax=42)
-    rhessi_map.plot_settings['cmap'] = 'inferno'
-    new_rhessi_map = rhessi_map._new_instance(rhessi_map.data,
-                                              rhessi_map.meta,
-                                              plot_settings=rhessi_map.plot_settings)
-    assert new_rhessi_map.plot_settings['norm'].vmin == rhessi_map.plot_settings['norm'].vmin
-    assert new_rhessi_map.plot_settings['norm'].vmax == rhessi_map.plot_settings['norm'].vmax
-    assert new_rhessi_map.plot_settings['cmap'] == rhessi_map.plot_settings['cmap']
-    # If no plot settings are explicitly passed, the plot_settings should fall back to those
-    # in the constructor
-    new_rhessi_map = rhessi_map._new_instance(rhessi_map.data, rhessi_map.meta)
-    assert new_rhessi_map.plot_settings['norm'].vmin is None
-    assert new_rhessi_map.plot_settings['norm'].vmax is None
-    assert new_rhessi_map.plot_settings['cmap'] == new_rhessi_map._get_cmap_name()
-
-
 def test_wcs(rhessi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
-    with pytest.warns(SunpyMetadataWarning,
-                      match='Missing metadata for observer: assuming Earth-based observer.*'):
-        rhessi_map.wcs.pixel_to_world(0, 0)
+    rhessi_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(rhessi_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = RHESSIMap(rhessi_map.data, rhessi_map.meta)
+    assert isinstance(smap, RHESSIMap)

@@ -10,6 +10,7 @@ import astropy.units as u
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.mapbase import SpatialPair
 from sunpy.map.sources.hinode import XRTMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -93,3 +94,10 @@ def test_wheel_measurements(xrt_map):
 def test_wcs(xrt_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     xrt_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(xrt_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = XRTMap(xrt_map.data, xrt_map.meta)
+    assert isinstance(smap, XRTMap)

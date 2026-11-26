@@ -5,6 +5,7 @@ import pytest
 
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.proba2 import SWAPMap
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 
@@ -50,3 +51,10 @@ def test_measurement(swap_map):
 def test_wcs(swap_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     swap_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(swap_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = SWAPMap(swap_map.data, swap_map.meta)
+    assert isinstance(smap, SWAPMap)

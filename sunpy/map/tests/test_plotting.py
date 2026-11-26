@@ -119,6 +119,21 @@ def test_rectangle_aia171_top_right(aia171_test_map):
     plt.legend()  # Check that the 'Rectangle' label shows up in the legend
 
 
+@pytest.mark.parametrize("frame", ["map", "hgs"])
+def test_quadrangle_anchor_pixel(aia171_test_map, frame):
+    # The quadrangle must be drawn at the right place whatever the units of the WCS
+    bottom_left = SkyCoord(100 * u.arcsec, 100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    if frame == "hgs":
+        bottom_left = bottom_left.transform_to(HeliographicStonyhurst(obstime=aia171_test_map.date))
+    ax = Figure().add_subplot(projection=aia171_test_map)
+    quad = aia171_test_map.draw_quadrangle(bottom_left, width=10 * u.deg, height=10 * u.deg, axes=ax)
+
+    anchor = quad.get_transform().transform(quad.get_path().vertices[:1])
+    anchor = ax.transData.inverted().transform(anchor)[0]
+    expected = aia171_test_map.wcs.world_to_pixel(bottom_left)
+    np.testing.assert_allclose(anchor, expected, atol=1e-6)
+
+
 @figure_test
 def test_quadrangle_aia17_width_height(aia171_test_map):
     aia171_test_map.plot()
@@ -161,6 +176,19 @@ def test_quadrangle_aia17_pix_top_right_different_axes(aia171_test_map):
     # Plot a rectangle in the pixel space of the original map
     aia171_test_map.draw_quadrangle(bottom_left=(50, 50)*u.pix,
                                     top_right=(80, 90)*u.pix, edgecolor='cyan')
+
+
+@pytest.mark.parametrize("kwargs", [{"top_right": (80, 90) * u.pix},
+                                    {"width": 30 * u.pix, "height": 40 * u.pix}])
+def test_draw_quadrangle_pixel_extent(aia171_test_map, kwargs):
+    # Pixel input is parsed by the same helper that submap uses, so checking it here
+    # outside of a figure comparison.
+    fig = Figure()
+    ax = fig.add_subplot(projection=aia171_test_map)
+    quad = aia171_test_map.draw_quadrangle(bottom_left=(50, 50)*u.pix, axes=ax, **kwargs)
+    vertices = quad.get_xy()
+    np.testing.assert_allclose(np.min(vertices, axis=0), [50, 50])
+    np.testing.assert_allclose(np.max(vertices, axis=0), [80, 90])
 
 
 @figure_test
@@ -476,3 +504,10 @@ def test_plot_uint8(aia171_test_map):
     fig = Figure()
     ax = fig.add_subplot(projection=aia171_uint8)
     aia171_uint8.plot(axes=ax)
+
+
+def test_degree_map_wcs_resample(carrington_map):
+    # A preserve_units WCS in degrees segfaults when its cdelt is set after
+    # set() (astropy#20417), which is what rebinning does to the map WCS
+    rebinned = carrington_map.rebin((2, 2))
+    assert u.allclose(rebinned.scale[0], 2 * carrington_map.scale[0])

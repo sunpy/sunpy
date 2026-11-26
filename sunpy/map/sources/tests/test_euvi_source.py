@@ -9,6 +9,7 @@ from sunpy.coordinates import sun
 from sunpy.data.test import get_dummy_map_from_header, get_test_filepath
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.sun import constants
+from sunpy.util.exceptions import SunpyDeprecationWarning
 from .helpers import _test_private_date_setters
 
 __all__ = "Pritish C. (VaticanCameos)"
@@ -60,7 +61,7 @@ def test_rsun_obs(euvi_map):
 
 def test_rsun_missing(euvi_map):
     """Tests output if 'rsun' is missing"""
-    euvi_no_rsun = euvi_map._new_instance(euvi_map.data, copy.deepcopy(euvi_map.meta))
+    euvi_no_rsun = euvi_map._new_instance(data=euvi_map.data, meta=copy.deepcopy(euvi_map.meta))
     euvi_no_rsun.meta.pop('rsun', None)
     r = euvi_no_rsun.observer_coordinate.radius
     assert euvi_no_rsun.rsun_obs == sun._angular_radius(constants.radius, r)
@@ -74,3 +75,10 @@ def test_norm_clip(euvi_map):
 def test_wcs(euvi_map):
     # Smoke test that WCS is valid and can transform from pixels to world coordinates
     euvi_map.wcs.pixel_to_world(0, 0)
+
+
+def test_old_sig_sources(euvi_map):
+    with pytest.warns(SunpyDeprecationWarning,
+                      match="header as a positional argument is deprecated"):
+        smap = EUVIMap(euvi_map.data, euvi_map.meta)
+    assert isinstance(smap, EUVIMap)
