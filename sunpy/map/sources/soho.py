@@ -96,7 +96,7 @@ class EITMap(GenericMap):
 
     @property
     def rsun_obs(self):
-        return u.Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
+        return (self.meta['solar_r'] * self.scale[0] * u.pix).to(u.arcsec)
 
     @property
     def _supported_observer_coordinates(self):

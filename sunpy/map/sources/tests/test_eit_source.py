@@ -65,6 +65,14 @@ def test_rsun(eit_map):
     assert u.allclose(eit_map.rsun_obs, 979.0701*u.arcsec)
 
 
+def test_rsun_uses_spatial_units(eit_map):
+    meta = eit_map.meta.copy()
+    meta['cdelt1'] /= 3600
+    meta['cunit1'] = 'deg'
+    new_map = sunpy.map.Map(eit_map.data, meta)
+    assert u.allclose(new_map.rsun_obs, eit_map.rsun_obs)
+
+
 def test_norm_clip(eit_map):
     # Tests that the default normalizer has clipping disabled
     assert not eit_map.plot_settings['norm'].clip
