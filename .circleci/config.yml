@@ -117,3 +117,4 @@ workflows:
             branches:
               only:
                 - main
+                - /\d{1,2}\.\d/
