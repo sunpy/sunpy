@@ -59,7 +59,7 @@ from sunpy.util.decorators import (
 )
 from sunpy.util.exceptions import warn_user
 from sunpy.util.functools import seconddispatch
-from sunpy.util.util import _figure_to_base64, fix_duplicate_notes
+from sunpy.util.util import _REPR_FIGURE_STYLE, _figure_to_base64, fix_duplicate_notes
 
 TIME_FORMAT = config.get("general", "time_format")
 _NUMPY_COPY_IF_NEEDED = False if np.__version__.startswith("1.") else None
@@ -440,7 +440,7 @@ class GenericMap(MapMetaMixin, NDData):
         ax.set_title('Cumulative distribution of pixel values')
         cdf_src = _figure_to_base64(fig)
 
-        return textwrap.dedent(f"""\
+        return _REPR_FIGURE_STYLE + textwrap.dedent(f"""\
             <pre>{html.escape(object.__repr__(self))}</pre>
             <table>
                 <tr>
@@ -450,7 +450,7 @@ class GenericMap(MapMetaMixin, NDData):
                             Image colormap uses histogram equalization<br>
                             Click on the image to toggle between units
                         </div>
-                        <img src='data:image/png;base64,{wcs_src}'
+                        <img class='sunpy-repr-figure' src='data:image/png;base64,{wcs_src}'
                              src2='data:image/png;base64,{pixel_src}'
                              onClick='var temp = this.src;
                                       this.src = this.getAttribute("src2");
@@ -464,7 +464,7 @@ class GenericMap(MapMetaMixin, NDData):
                 <tr>
                 </tr>
                 <tr>
-                    <td><img src='data:image/png;base64,{hist_src}'
+                    <td><img class='sunpy-repr-figure' src='data:image/png;base64,{hist_src}'
                              src2='data:image/png;base64,{cdf_src}'
                              onClick='var temp = this.src;
                                       this.src = this.getAttribute("src2");

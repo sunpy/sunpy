@@ -37,6 +37,7 @@ from sunpy.time import parse_time
 from sunpy.util import SunpyUserWarning
 from sunpy.util.exceptions import SunpyDeprecationWarning, SunpyMetadataWarning
 from sunpy.util.metadata import ModifiedItem
+from sunpy.util.util import _REPR_FIGURE_STYLE
 from .strategies import matrix_meta
 
 
@@ -1557,6 +1558,10 @@ def test_wcs_isot(aia171_test_map):
 def test_repr_html(aia171_test_map):
     html_string = aia171_test_map._repr_html_()
     assert isinstance(html_string, str)
+
+    # Check that the figures are hooked up to the CSS for dark color schemes
+    assert html_string.startswith(_REPR_FIGURE_STYLE)
+    assert html_string.removeprefix(_REPR_FIGURE_STYLE).count('sunpy-repr-figure') == 2
 
     # Add a NaN value and check
     aia171_test_map.data[0, 0] = np.nan

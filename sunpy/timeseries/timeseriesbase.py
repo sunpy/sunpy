@@ -29,7 +29,7 @@ from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.exceptions import warn_user
 from sunpy.util.metadata import MetaDict
-from sunpy.util.util import _figure_to_base64
+from sunpy.util.util import _REPR_FIGURE_STYLE, _figure_to_base64
 from sunpy.visualization import peek_show
 
 # define and register a new unit, needed for RHESSI
@@ -344,7 +344,7 @@ class GenericTimeSeries:
         # conflict in a single notebook.
         source = str(self.source) + str(time.perf_counter_ns())
 
-        return textwrap.dedent(f"""\
+        return _REPR_FIGURE_STYLE + textwrap.dedent(f"""\
             <pre>{html.escape(object.__repr__(self))}</pre>
             <script type="text/javascript">
             function ImageChange(images) {{
@@ -363,14 +363,14 @@ class GenericTimeSeries:
                 <tr>
                     <td style='width:40%'>{text_to_table}</td>
                     <td rowspan=3>
-                        <img src='data:image/png;base64,{spc}'/>
+                        <img class='sunpy-repr-figure' src='data:image/png;base64,{spc}'/>
                     </td>
                 </tr>
                 <tr>
                 </tr>
                 <tr>
                     <td>
-                    <img src="{hlist2[0]}" alt="Click here for histograms"
+                    <img class="sunpy-repr-figure" src="{hlist2[0]}" alt="Click here for histograms"
                          onclick="{source}.next(this)"/>
                     </td>
                 </tr>

@@ -22,6 +22,7 @@ from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util import SunpyUserWarning
 from sunpy.util.metadata import MetaDict
+from sunpy.util.util import _REPR_FIGURE_STYLE
 
 # Test fixtures are in ../conftest.py
 
@@ -519,6 +520,10 @@ def test_ts_sort_index(generic_ts):
 def test_repr_html_(generic_ts):
     html_string = generic_ts._repr_html_()
     assert isinstance(html_string, str)
+
+    # Check that the figures are hooked up to the CSS for dark color schemes
+    assert html_string.startswith(_REPR_FIGURE_STYLE)
+    assert html_string.removeprefix(_REPR_FIGURE_STYLE).count('sunpy-repr-figure') == 2
 
 
 @pytest.mark.thread_unsafe(reason="mocks web browser")
