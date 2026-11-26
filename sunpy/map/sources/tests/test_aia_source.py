@@ -76,12 +76,12 @@ def test_new_instance_preserves_plot_settings(aia_map):
     assert new_aia_map.plot_settings['norm'].vmin == aia_map.plot_settings['norm'].vmin
     assert new_aia_map.plot_settings['norm'].vmax == aia_map.plot_settings['norm'].vmax
     assert new_aia_map.plot_settings['cmap'] == aia_map.plot_settings['cmap']
-    # If no plot settings are explicitly passed, the plot_settings should fall back to those
-    # in the constructor
+    # If no plot settings are explicitly passed, the plot_settings
+    # should use the plot settings from the old map
     new_aia_map = aia_map._new_instance(data=aia_map.data, meta=aia_map.meta)
-    assert new_aia_map.plot_settings['norm'].vmin is None
-    assert new_aia_map.plot_settings['norm'].vmax is None
-    assert new_aia_map.plot_settings['cmap'] == new_aia_map._get_cmap_name()
+    assert new_aia_map.plot_settings['norm'].vmin == aia_map.plot_settings['norm'].vmin
+    assert new_aia_map.plot_settings['norm'].vmax == aia_map.plot_settings['norm'].vmax
+    assert new_aia_map.plot_settings['cmap'] == aia_map.plot_settings['cmap']
 
 
 def test_wcs(aia_map):
