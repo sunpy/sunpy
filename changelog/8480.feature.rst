@@ -1,0 +1,3 @@
+Added support for the CDF epoch formats to `sunpy.time.parse_time`.
+Passing ``format='cdf_epoch'``, ``format='cdf_epoch16'`` or ``format='cdf_tt2000'`` converts raw ``CDF_EPOCH``, ``CDF_EPOCH16`` and ``CDF_TIME_TT2000`` values into a `~astropy.time.Time`, which is useful when such values have been separated from the CDF file that defined them.
+This requires `cdflib <https://cdflib.readthedocs.io/>`__ to be installed.
