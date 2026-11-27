@@ -119,6 +119,11 @@ class XRSTimeSeries(GenericTimeSeries):
         # The ordering of where we get the metadata from is important.
         # We always want to check ID first as that will most likely have the correct information.
         # The other fields are fallback and sometimes have data in them that is "useless".
+        if not self.meta.metas:
+            # An empty timeseries (e.g. the result of a truncation that
+            # selected no rows) has no metadata to parse.
+            log.debug('No metadata available to parse a satellite number from')
+            return None
         id = (
             self.meta.metas[0].get("id", "").strip()
             or self.meta.metas[0].get("filename_id", "").strip()
