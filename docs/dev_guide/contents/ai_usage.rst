@@ -18,7 +18,7 @@ These tools can be valuable aids for exploration, debugging, documentation, and 
 contributions from people of all backgrounds, including
 those outside solar physics.
 
-However, AI cannot replace human understanding or shift disproportionate effort or responsibility onto the project to validate contributions.
+However, AI cannot replace human understanding and should not disproportionately shift the effort of validating contributions onto the project maintainers.
 We do not welcome automated or opportunistic AI-generated
 issues and pull requests, including unsolicited bug fixes
 or minor improvements submitted without a clear understanding
