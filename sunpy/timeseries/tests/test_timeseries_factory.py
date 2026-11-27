@@ -437,3 +437,22 @@ def test_validate_meta_astropy_header():
 def test_get_matching_widget():
     with pytest.raises(NoMatchError, match="failed to validate"):
         sunpy.timeseries.TimeSeries(hsi_filepath)
+
+
+@pytest.mark.filterwarnings("ignore:Unknown units")
+def test_timeseries_progress_bar(mocker):
+    mock_tqdm = mocker.patch("tqdm.tqdm", side_effect=lambda iterable, *args, **kwargs: iterable)
+
+    sunpy.timeseries.TimeSeries(eve_many_filepath, source="EVE", progress=False)
+    assert not mock_tqdm.called
+
+    sunpy.timeseries.TimeSeries(eve_many_filepath, source="EVE", progress=True)
+    assert mock_tqdm.called
+
+    mock_tqdm.reset_mock()
+    sunpy.timeseries.TimeSeries(eve_many_filepath[0].parent, source="EVE", progress=True)
+    assert mock_tqdm.called
+
+    mock_tqdm.reset_mock()
+    sunpy.timeseries.TimeSeries(eve_filepath, source="EVE", progress=True)
+    assert not mock_tqdm.called
