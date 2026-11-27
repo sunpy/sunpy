@@ -8,7 +8,6 @@ Core Principle for the Use of AI in Contributions
 =================================================
 SunPy is a community-driven project that develops and maintains scientific software for solar physics research.
 A key part of the project is building and supporting a collaborative community around that software.
-
 Contributing to the SunPy project requires human judgment, contextual understanding, and familiarity with the SunPy project's structure and goals.
 
 The SunPy project will accept the responsible use of AI-assisted tools by both contributors and maintainers.
@@ -22,31 +21,9 @@ Furthermore, **technical correctness alone does not guarantee acceptance.**
 Finding and fixing a bug does not automatically make a contribution valuable to this project.
 In short, **any contribution should be worth more to the project than the effort required to review it.**
 
-.. _ai_usage_new_contributors:
-
-New Contributors
-================
-We are glad you want to contribute to SunPy!
-To help us get to know new members of our community, pull requests opened by first-time contributors are automatically closed by a bot.
-
-
-If your pull request is closed in this way:
-#. Join the `SunPy new contributors chat <https://matrix.to/#/#sunpy-new-contributors:openastronomy.org>`__ and introduce yourself with a post that includes:
-
-   * A brief introduction to yourself, including your background and what interests you about SunPy.
-   * A link to your pull request, and how the bug or missing feature affects your work.
-
-#. A maintainer will then take a look and, if the contribution follows this policy, reopen your pull request.
-
-You are welcome to introduce yourself, and to open an issue to discuss your idea, *before* opening a pull request.
-This is often the quickest way to get your contribution reviewed.
-
-Once you have had a pull request merged in the SunPy GitHub organization, you will be added to our contributor allowlist (updated weekly), and your future pull requests will not be closed automatically.
-Members of the SunPy organization, and contributors already known to the community, are not affected.
-
 Non-Compliance
 ==============
-Maintainers will close issues or pull requests that do not meet these expectations, including technically correct changes that provide insufficient value to SunPy or its users.
+Maintainers may close issues or pull requests that do not meet these expectations, including technically correct changes that provide insufficient value to the SunPy project or its users.
 
 All pull requests **must** include the AI Assistance Disclosure checklist (listed below) in their description
 
@@ -56,14 +33,37 @@ All pull requests **must** include the AI Assistance Disclosure checklist (liste
 This is automatically added to the pull request description when you open a pull request.
 If it is not automatically added to the pull request description (e.g. if using the GitHub API), then the contributor is responsible for manually adding the above checklist to the pull request description.
 Pull requests which fail to complete the AI Assistance Disclosure checklist **will be marked as draft and will not be reviewed until the checklist is completed**.
-Pull requests which remove the AI Assistance Disclosure checklist entirely **will be immediately closed without a review**.
+Pull requests which remove the AI Assistance Disclosure checklist entirely **may be immediately closed without a review**.
 Removing or failing to complete this checklist may be deemed a form of non-compliance.
 
 Repeated non-compliance may be considered a `code of conduct <https://sunpy.org/coc/>`__ violation.
 
+.. _ai_usage_new_contributors:
+
+Pull Request from New Contributors
+==================================
+Like many open source projects, SunPy has seen a sharp increase in pull requests that are generated largely or entirely by AI tools.
+These often come from accounts with no prior involvement in the project, address problems that no user has reported, and are submitted by authors who cannot explain or follow up on the changes.
+Each one still takes time for a maintainer to read, assess, and respond to, and that time comes from a small team of mostly volunteers.
+
+To protect that time, while still welcoming genuine new contributors, pull requests from first-time contributors are automatically closed and the author is asked to introduce themselves before the pull request is considered.
+This is not a judgement on the quality of your work, and it is not a rejection.
+It gives us a chance to get to know you and to understand why the change matters to you, which is the human context that automated submissions lack.
+
+If your pull request has been closed in this way, please join the `SunPy new contributors chat <https://matrix.to/#/#sunpy-new-contributors:openastronomy.org>`__ and post:
+
+* A brief introduction to yourself, including your background and what interests you about SunPy.
+* A link to your pull request, and how the bug or missing feature it addresses affects your work.
+
+A maintainer will then take a look and, if the contribution follows this policy, reopen your pull request.
+You are also welcome, and encouraged, to introduce yourself, or to open an issue to discuss your idea, *before* opening a pull request.
+
+Once you have had a pull request merged in the SunPy GitHub organization, you will be added to our contributor allowlist (updated weekly) and your future pull requests will not be closed automatically.
+Members of the SunPy organization, and contributors already known to the community, are not affected.
+
 Responsible Uses of AI
 =======================
-Contributions should be prepared with the expectation that they must be worth more to the project than the effort required to review.
+Contributions should be prepared with the expectation that they must be worth more to the project than the effort required to review it.
 This includes, but is not limited to:
 
 * Initial code review and discussion
