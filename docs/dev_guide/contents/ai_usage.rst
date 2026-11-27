@@ -19,18 +19,11 @@ contributions from people of all backgrounds, including
 those outside solar physics.
 
 However, AI cannot replace human understanding and should not disproportionately shift the effort of validating contributions onto the project maintainers.
-We do not welcome automated or opportunistic AI-generated
-issues and pull requests, including unsolicited bug fixes
-or minor improvements submitted without a clear understanding
-of why they are needed or how they benefit SunPy's users.
-
-**Technical correctness alone does not guarantee acceptance.**
-Finding and fixing a bug does not automatically make a
-contribution valuable to the project.
-
-The core principle can be summarised as:
-
-**Any contribution should be worth more to the project than the effort required to review it.**
+We do not welcome issues or pull requests automatically created by AI agents.
+These include unsolicited bug fixes or minor improvements submitted without a clear understanding of why they are needed or how they benefit the SunPy user community.
+Furthermore, **technical correctness alone does not guarantee acceptance.**
+Finding and fixing a bug does not automatically make a contribution valuable to this project.
+In short, **any contribution should be worth more to the project than the effort required to review it.**
 
 Non-Compliance
 ==============
