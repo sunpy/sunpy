@@ -1,0 +1,1 @@
+Added an interactive, searchable table of CDAWeb dataset names to the :ref:`sphx_glr_generated_gallery_acquiring_data_search_cdaweb.py` example.
