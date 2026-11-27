@@ -239,7 +239,20 @@ def struct_to_data(xdrdata, subskeleton):
         else:
             sswsize = subskeleton[key]
             sswtype = sswsize[-2]
-            if sswsize[0] == 0:
+            if sswtype == 1:
+                # Byte data is not written element by element like the other
+                # numeric types: IDL transfers it as a single counted block
+                # (the xdr_bytes representation), so read it in one go.
+                byte_data = xdrdata.unpack_bytes()
+                if sswsize[0] == 0:
+                    if len(byte_data) != 1:
+                        raise ValueError(f"A scalar byte value is stored as a single byte, "
+                                         f"but the byte block for {key} contains {len(byte_data)} bytes.")
+                    subskeleton[key] = byte_data[0]
+                else:
+                    subskeleton[key] = np.frombuffer(byte_data, dtype=np.uint8).copy().reshape(
+                        sswsize[1:-2][::-1])
+            elif sswsize[0] == 0:
                 subskeleton[key] = types_dict[sswtype][0]()
             else:
                 subskeleton[key] = np.array(xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype][0]),
