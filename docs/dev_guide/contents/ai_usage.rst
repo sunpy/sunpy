@@ -16,7 +16,7 @@ We welcome meaningful contributions from people of all backgrounds, including th
 
 However, AI cannot replace human understanding and should not disproportionately shift the effort of validating contributions onto the project maintainers.
 We do not welcome issues or pull requests automatically created by AI agents.
-These include unsolicited bug fixes or minor improvements submitted without a clear understanding of why they are needed or how they benefit the SunPy user community.
+These include unsolicited bug fixes or minor improvements submitted without a clear understanding of why they are needed or how they benefit the SunPy project user community.
 Furthermore, **technical correctness alone does not guarantee acceptance.**
 Finding and fixing a bug does not automatically make a contribution valuable to this project.
 In short, **any contribution should be worth more to the project than the effort required to review it.**
@@ -106,11 +106,8 @@ Transparency and Sustainable Collaboration
 Contributors should be transparent about AI assistance and be prepared to explain how AI tools were used and how the resulting work was validated.
 Transparency supports trust, effective collaboration, and sustainable maintenance.
 
-The purpose of this policy is to support meaningful
-contributions while discouraging low-value, opportunistic,
-or automated submissions. AI tools can assist contributors,
-but they must not replace genuine understanding of the project
-or place an unreasonable burden on maintainers.
+The purpose of this policy is to support meaningful contributions while discouraging low-value, opportunistic, or automated submissions.
+AI tools can assist contributors, but they must not replace genuine understanding of the project or place an unreasonable burden on maintainers.
 
 This document may evolve over time as generative AI tooling and community expectations change.
 Contributors should refer to the latest version when preparing contributions.
