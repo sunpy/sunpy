@@ -516,6 +516,38 @@ def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().to_dataframe().equals(generic_ts.to_dataframe().sort_index())
 
 
+def test_ts_sort_index_keeps_source_class(goes_test_ts):
+    sorted_ts = goes_test_ts.sort_index()
+    assert type(sorted_ts) is type(goes_test_ts)
+    assert sorted_ts.observatory == goes_test_ts.observatory
+
+
+class ExtraStateTimeSeries(GenericTimeSeries):
+    # A subclass with some extra state, to check that operations
+    # build their results through _new_instance.
+    extra = None
+
+    def _new_instance(self, data, meta=None, units=None, **kwargs):
+        new_ts = super()._new_instance(data, meta, units, **kwargs)
+        new_ts.extra = self.extra
+        return new_ts
+
+
+@pytest.mark.parametrize("operation", [
+    lambda ts: ts.sort_index(),
+    lambda ts: ts.truncate(0, 10),
+    lambda ts: ts.add_column("new", np.ones(len(ts.to_dataframe())) * u.m),
+    lambda ts: ts.remove_column(ts.columns[0]),
+    lambda ts: ts.concatenate(ts.truncate(0, 10)),
+])
+def test_operations_use_new_instance(generic_ts, operation):
+    ts = ExtraStateTimeSeries(generic_ts.to_dataframe(), generic_ts.meta, generic_ts.units)
+    ts.extra = "kept"
+    result = operation(ts)
+    assert isinstance(result, ExtraStateTimeSeries)
+    assert result.extra == "kept"
+
+
 def test_repr_html_(generic_ts):
     html_string = generic_ts._repr_html_()
     assert isinstance(html_string, str)
