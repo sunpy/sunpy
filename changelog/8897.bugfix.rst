@@ -1,0 +1,1 @@
+Fixed `~sunpy.net.scraper.Scraper` to correctly handle local file URIs and URLs containing percent-encoded characters such as spaces.
