@@ -15,6 +15,7 @@ from sunpy.coordinates.utils import (
     get_limb_coordinates,
     get_rectangle_coordinates,
     solar_angle_equivalency,
+    solar_angular_radius,
 )
 from sunpy.sun import constants
 from sunpy.util.exceptions import SunpyUserWarning
@@ -418,3 +419,15 @@ def test_get_heliocentric_angle_errors():
     bad_skycoord = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='heliographic_stonyhurst', observer="earth")
     with pytest.raises(ConvertError, match="frame needs a specified obstime"):
         get_heliocentric_angle(bad_skycoord)
+
+
+def test_solar_angular_radius():
+    from sunpy.coordinates import Helioprojective
+    coord = SkyCoord(0 * u.arcsec, 0 * u.arcsec, observer="earth", obstime="2020-01-01", frame=Helioprojective)
+    sar = solar_angular_radius(coord)
+    assert isinstance(sar, u.Quantity)
+    assert sar.unit.is_equivalent(u.arcsec)
+    np.testing.assert_almost_equal(sar.to_value(u.arcsec), 975.53, decimal=1)
+
+    with pytest.raises(ValueError, match="must be in the Helioprojective frame"):
+        solar_angular_radius(SkyCoord(0 * u.deg, 0 * u.deg, frame="icrs"))
