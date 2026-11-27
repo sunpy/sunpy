@@ -165,11 +165,17 @@ class SOARClient(BaseClient):
         for q in query:
             if "DISTANCE" in str(q):
                 distance_parameter.append(q)
+            elif q.startswith("category="):
+                category = q.split("=")[1][1:-1].lower()
+                if category == "calibration":
+                    data_table = "v_calibration_file"
+                elif category == "ancillary":
+                    data_table = "v_ancillary_file"
             else:
                 non_distance_parameters.append(q)
                 if q.startswith("instrument") or (q.startswith("descriptor") and not instrument_name):
                     instrument_name = q.split("=")[1][1:-1].split("-")[0].upper()
-                elif q.startswith("level") and q.split("=")[1][1:3] == "LL":
+                elif q.startswith("level") and q.split("=")[1][1:3] == "LL" and data_table == "v_sc_data_item":
                     data_table = "v_ll_data_item"
 
         query = non_distance_parameters + distance_parameter
@@ -234,21 +240,33 @@ class SOARClient(BaseClient):
             for i, name in enumerate(names):
                 info[name].append(entry[i])
 
-        if len(info["begin_time"]):
+        if len(info.get("begin_time", [])):
             info["begin_time"] = parse_time(info["begin_time"]).iso
+        if len(info.get("end_time", [])):
             info["end_time"] = parse_time(info["end_time"]).iso
 
+        # Determine the primary key column for downloading
+        if "data_item_id" in info:
+            data_id = info["data_item_id"]
+        elif "calibration_file_id" in info:
+            data_id = info["calibration_file_id"]
+        elif "ancillary_file_id" in info:
+            data_id = info["ancillary_file_id"]
+        else:
+            data_id = [""] * len(info.get("begin_time", []))
+
+        result_len = len(info.get("begin_time", []))
         result_table = astropy.table.QTable(
             {
-                "Instrument": info["instrument"],
-                "Data product": info["descriptor"],
-                "Level": info["level"],
-                "Start time": info["begin_time"],
-                "End time": info["end_time"],
-                "Data item ID": info["data_item_id"],
-                "Filename": info["filename"],
-                "Filesize": info["filesize"],
-                "SOOP Name": info["soop_name"],
+                "Instrument": info.get("instrument", [""] * result_len),
+                "Data product": info.get("descriptor", [""] * result_len),
+                "Level": info.get("level", [""] * result_len),
+                "Start time": info.get("begin_time", [""] * result_len),
+                "End time": info.get("end_time", [""] * result_len),
+                "Data item ID": data_id,
+                "Filename": info.get("filename", [""] * result_len),
+                "Filesize": info.get("filesize", [0] * result_len),
+                "SOOP Name": info.get("soop_name", [""] * result_len),
             },
         )
         if "detector" in info:
@@ -303,7 +321,7 @@ class SOARClient(BaseClient):
         bool
             True if this client can handle the given query.
         """
-        from sunpy.net.soar.attrs import SOOP, Distance, Product, Sensor  # NOQA: PLC0415
+        from sunpy.net.soar.attrs import SOOP, Category, Distance, Product, Sensor  # NOQA: PLC0415
 
         required = {Distance} if any(isinstance(q, Distance) for q in query) else {a.Time}
         optional = {
@@ -315,6 +333,7 @@ class SOARClient(BaseClient):
             a.Provider,
             Product,
             SOOP,
+            Category,
             Distance,
             a.Time,
         }
@@ -357,7 +376,7 @@ class SOARClient(BaseClient):
         dict
             The dictionary containing the values formed into attributes.
         """
-        from sunpy.net.soar.attrs import SOOP, Product, Sensor  # NOQA: PLC0415
+        from sunpy.net.soar.attrs import SOOP, Category, Product, Sensor  # NOQA: PLC0415
 
         # Instrument attrs
         attrs_path = pathlib.Path(__file__).parent / "data" / "attrs.json"
@@ -389,6 +408,7 @@ class SOARClient(BaseClient):
             a.Instrument: all_instr,
             Sensor: all_sensors,
             SOOP: all_soops,
+            Category: [("Science", "Science data"), ("Calibration", "Calibration data"), ("Ancillary", "Ancillary data")],
             a.Provider: [("SOAR", "Solar Orbiter Archive.")],
         }
 
