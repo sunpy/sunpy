@@ -27,6 +27,33 @@ def test_parse_time_24_2():
     assert dt.scale == 'utc'
 
 
+@pytest.mark.parametrize('time_string', [
+    '2010-10-10T24:00:00',
+    '2010-10-10T24:00:00.000000',
+    '2010-10-10T24:00:00Z',
+    '20101010T240000',
+    '2010.10.10_24:00:00_UTC',
+    '2010/10/10 24:00:00',
+])
+def test_parse_time_24_list(time_string):
+    dt = parse_time([time_string])
+    assert dt[0] == parse_time(time_string)
+    assert dt[0] == Time('2010-10-11')
+    assert dt.format == 'isot'
+
+
+def test_parse_time_24_list_mixed():
+    dt = parse_time(['2010-10-10T23:00:00', '2010-10-10T24:00:00'])
+    assert dt[0] == Time('2010-10-10T23:00:00')
+    assert dt[1] == Time('2010-10-11T00:00:00')
+
+
+def test_parse_time_24_list_tai():
+    dt = parse_time(['2010.10.10_24:00:00_TAI'])
+    assert dt[0] == Time('2010-10-11', scale='tai')
+    assert dt.scale == 'tai'
+
+
 def test_parse_time_microseconds_excess_trailing_zeros():
     dt = parse_time('2010-Oct-10 00:00:00.1234560')
     assert dt == Time('2010-10-10 00:00:00.123456')
