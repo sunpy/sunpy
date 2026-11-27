@@ -1,0 +1,18 @@
+Increased minimum versions for these dependencies:
+
+- aiobotocore >= 2.16.0
+- asdf >= 4.1.0
+- asdf-astropy >= 0.8.0
+- boto3 >= 1.36.0
+- contourpy >= 1.4.0
+- dask >= 2025.1.0
+- drms >= 0.9.0
+- fsspec >= 2024.12.0
+- h5netcdf >= 1.5.0
+- h5py >= 3.13.0
+- lxml >= 5.4.0
+- opencv-python >= 4.11.0.86
+- packaging >= 25.0
+- scikit-image >= 0.25.0
+- scipy >= 1.15.0
+- tqdm >= 4.68.0
