@@ -6,17 +6,14 @@ AI Usage
 
 Core Principle for the Use of AI in Contributions
 =================================================
-SunPy is a community-driven project that develops and maintains
-scientific software for solar physics research. A key part of
-the project is building and supporting a collaborative community
-around that software.
+SunPy is a community-driven project that develops and maintains scientific software for solar physics research.
+A key part of the project is building and supporting a collaborative community around that software.
 
 Contributing to the SunPy project requires human judgment, contextual understanding, and familiarity with the SunPy project's structure and goals.
 
 The SunPy project will accept the responsible use of AI-assisted tools by both contributors and maintainers.
-These tools can be valuable aids for exploration, debugging, documentation, and code improvement, especially for researchers and students developing their software skills. We welcome meaningful
-contributions from people of all backgrounds, including
-those outside solar physics.
+These tools can be valuable aids for exploration, debugging, documentation, and code improvement, especially for researchers and students developing their software skills.
+We welcome meaningful contributions from people of all backgrounds, including those outside solar physics.
 
 However, AI cannot replace human understanding and should not disproportionately shift the effort of validating contributions onto the project maintainers.
 We do not welcome issues or pull requests automatically created by AI agents.
@@ -27,15 +24,10 @@ In short, **any contribution should be worth more to the project than the effort
 
 Non-Compliance
 ==============
-Maintainers may close issues or pull requests that do not
-meet these expectations, including technically correct
-changes that provide insufficient value to SunPy or its users.
+Maintainers may close issues or pull requests that do not meet these expectations, including technically correct changes that provide insufficient value to SunPy or its users.
 
-New contributors will also have their pull requests automatically
-closed as part of our contributor onboarding process. They will be directed to our `SunPy new contributors chat
-<https://matrix.to/#/#sunpy-new-contributors:openastronomy.org>`_
-to introduce themselves and explain the motivation for their
-contribution.
+New contributors will also have their pull requests automatically closed as part of our contributor onboarding process.
+They will be directed to our `SunPy new contributors chat <https://matrix.to/#/#sunpy-new-contributors:openastronomy.org>`_ to introduce themselves and explain the motivation for their contribution.
 
 All pull requests **must** include the AI Assistance Disclosure checklist (listed below) in their description
 
@@ -81,13 +73,9 @@ Examples of appropriate use:
 
 Examples of inappropriate use:
 ------------------------------
-* Using AI to automatically search SunPy's codebase for
-bugs, minor fixes, or refactoring opportunities primarily
-for the purpose of generating issues or pull requests.
-* Submitting AI-generated issues without independently
-verifying the problem or understanding its relevance to SunPy.
-* Submitting unsolicited AI-generated pull requests without
-understanding why the change is needed or how it benefits users.
+* Using AI to automatically search SunPy's codebase for bugs, minor fixes, or refactoring opportunities primarily for the purpose of generating issues or pull requests.
+* Submitting AI-generated issues without independently verifying the problem or understanding its relevance to SunPy.
+* Submitting unsolicited AI-generated pull requests without understanding why the change is needed or how it benefits users.
 * Generating an entire pull request directly from an issue description and submitting it with minimal human understanding or validation.
 * Pasting AI generated text in the description of issues, PRs or in comments.
 * Using AI-generated changes as a substitute for learning the codebase or engaging with review feedback.
