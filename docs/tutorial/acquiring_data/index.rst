@@ -13,6 +13,7 @@ There are some data-provider specific tutorials that you might want to visit aft
 .. toctree::
     :maxdepth: 1
 
+    clients
     jsoc
     hek
 
@@ -66,6 +67,10 @@ Fido supports a number of different remote data sources. To see a list the Fido 
     HECClient         Provides access to the HELIO webservices.
     JSOCClient        Provides access to the JSOC Data Export service.
     VSOClient         Provides access to query and download from Virtual Solar Observatory (VSO).
+
+.. note::
+
+    For an in-depth breakdown of all supported clients, the missions and instruments they cover, and their query attributes, see :ref:`sunpy-tutorial-acquiring-data-clients`.
 
 Searching for Data
 ******************
