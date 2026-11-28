@@ -11,13 +11,14 @@ import numpy as np
 import astropy.units as u
 from astropy.coordinates import Longitude
 from astropy.visualization.wcsaxes import Quadrangle
+from astropy.wcs import WCS
 
 from sunpy import log
 from sunpy.coordinates.utils import get_rectangle_coordinates
 from sunpy.map.maputils import _clip_interval, _handle_norm
 from sunpy.util import grid_perimeter
 from sunpy.util.exceptions import SunpyUserWarning, warn_deprecated, warn_user
-from sunpy.visualization import axis_labels_from_ctype, peek_show, wcsaxes_compat
+from sunpy.visualization import axis_labels_from_physical_type, peek_show, wcsaxes_compat
 from sunpy.visualization.colormaps import cm as sunpy_cm
 from sunpy.visualization.visualization import _PrecomputedPixelCornersTransform
 
@@ -540,9 +541,10 @@ class MapPlotter:
 
             # WCSAxes has unit identifiers on the tick labels, so no need
             # to add unit information to the label
-            ctype = axes.wcs.wcs.ctype
-            axes.coords[0].set_axislabel(axis_labels_from_ctype(ctype[0], None))
-            axes.coords[1].set_axislabel(axis_labels_from_ctype(ctype[1], None))
+            physical_types = axes.wcs.world_axis_physical_types
+            for idx in range(2):
+                if (label := axis_labels_from_physical_type(physical_types[idx])) is not None:
+                    axes.coords[idx].set_axislabel(label)
 
         # Take a deep copy here so that a norm in imshow_kwargs doesn't get modified
         # by setting it's vmin and vmax
@@ -563,7 +565,7 @@ class MapPlotter:
 
         # Disable autoalignment if it is not necessary
         # TODO: revisit tolerance value
-        if autoalign is True and axes.wcs.wcs.compare(self.smap.wcs.wcs, tolerance=0.01):
+        if autoalign is True and self._is_same_wcs(axes.wcs):
             autoalign = False
 
         if autoalign in {True, 'image'}:
@@ -689,10 +691,20 @@ class MapPlotter:
             raise TypeError("The axes need to be an instance of WCSAxes. "
                             "To fix this pass set the `projection` keyword "
                             "to this map when creating the axes.")
-        elif warn_different_wcs and not axes.wcs.wcs.compare(self.smap.wcs.wcs, tolerance=0.01):
+        elif warn_different_wcs and not self._is_same_wcs(axes.wcs):
             warn_user('The map world coordinate system (WCS) is different from the axes WCS. '
                       'The map data axes may not correctly align with the coordinate axes. '
                       'To automatically transform the data to the coordinate axes, specify '
                       '`autoalign=True`.')
 
         return axes
+
+    def _is_same_wcs(self, axes_wcs):
+        """
+        Return whether ``axes_wcs`` matches ``self.smap.wcs`` within tolerance.
+        """
+        if axes_wcs is self.smap.wcs:
+            return True
+        if isinstance(axes_wcs, WCS) and isinstance(self.smap.wcs, WCS):
+            return axes_wcs.wcs.compare(self.smap.wcs.wcs, tolerance=0.01)
+        return False

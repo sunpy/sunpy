@@ -511,3 +511,28 @@ def test_degree_map_wcs_resample(carrington_map):
     # set() (astropy#20417), which is what rebinning does to the map WCS
     rebinned = carrington_map.rebin((2, 2))
     assert u.allclose(rebinned.scale[0], 2 * carrington_map.scale[0])
+
+
+def test_plot_ape14_sliced_wcs(aia171_test_map):
+    from astropy.wcs.wcsapi import SlicedLowLevelWCS
+
+    sliced_wcs = SlicedLowLevelWCS(aia171_test_map.wcs, slices=[slice(10, None), slice(10, None)])
+    fig = Figure()
+    ax = fig.add_subplot(projection=sliced_wcs)
+    aia171_test_map.plot(axes=ax)
+    assert ax.coords[0].get_axislabel() == 'Helioprojective Longitude (Solar-X)'
+    assert ax.coords[1].get_axislabel() == 'Helioprojective Latitude (Solar-Y)'
+
+    fig_no_align = Figure()
+    ax_no_align = fig_no_align.add_subplot(projection=sliced_wcs)
+    with pytest.warns(SunpyUserWarning, match='The map world coordinate system'):
+        aia171_test_map.plot(axes=ax_no_align, autoalign=False)
+
+
+def test_axis_labels_from_physical_type():
+    from sunpy.visualization import axis_labels_from_physical_type
+
+    assert axis_labels_from_physical_type('custom:pos.helioprojective.lon') == 'Helioprojective Longitude (Solar-X)'
+    assert axis_labels_from_physical_type('custom:pos.helioprojective.lat', 'arcsec') == 'Helioprojective Latitude (Solar-Y) [arcsec]'
+    assert axis_labels_from_physical_type('pos.eq.ra') == 'pos.eq.ra'
+    assert axis_labels_from_physical_type(None) is None

@@ -1,0 +1,1 @@
+Fixed `~sunpy.map.GenericMap.plot` failing with an ``AttributeError`` when plotting onto a `~astropy.visualization.wcsaxes.WCSAxes` backed by any APE-14 WCS (such as `~astropy.wcs.wcsapi.SlicedLowLevelWCS`) instead of a FITS `~astropy.wcs.WCS`.
